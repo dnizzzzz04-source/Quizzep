@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Quizzep - Belajar Jadi Seru</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+html, body { min-height: 100%; }
+body { background: linear-gradient(-45deg, #6366f1, #8b5cf6, #ec4899, #f59e0b, #10b981, #6366f1); background-size: 400% 400%; animation: gradientShift 20s ease infinite; color: #1e293b; overflow-x: hidden; position: relative; min-height: 100vh; }
+@keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+body::before, body::after { content: ''; position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.55; pointer-events: none; z-index: 0; }
+body::before { width: 320px; height: 320px; background: #c084fc; top: -120px; left: -120px; animation: orb1 14s ease-in-out infinite; }
+body::after { width: 380px; height: 380px; background: #f9a8d4; bottom: -160px; right: -160px; animation: orb2 18s ease-in-out infinite; }
+@keyframes orb1 { 0%,100% { transform: translate(0,0) scale(1); opacity: 0.5; } 50% { transform: translate(100px, 80px) scale(1.3); opacity: 0.7; } }
+@keyframes orb2 { 0%,100% { transform: translate(0,0) scale(1); opacity: 0.5; } 50% { transform: translate(-120px, -60px) scale(1.15); opacity: 0.7; } }
+.screen { display: none; min-height: 100vh; padding: 24px 16px; position: relative; z-index: 2; }
+.screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.card { position: relative; background: rgba(255,255,255,0.96); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border-radius: 28px; padding: 32px 24px; max-width: 520px; width: 100%; box-shadow: 0 25px 50px -12px rgba(15,23,42,0.3), 0 0 0 1px rgba(255,255,255,0.7) inset; animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1); z-index: 1; }
+.card-wide { max-width: 660px; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(28px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.logo { font-size: 68px; text-align: center; margin-bottom: 12px; animation: bounce 2.4s ease-in-out infinite; filter: drop-shadow(0 8px 20px rgba(139,92,246,0.4)); }
+@keyframes bounce { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-10px) rotate(-5deg); } }
+h1 { text-align: center; font-size: 38px; font-weight: 900; letter-spacing: -1px; margin-bottom: 8px; background: linear-gradient(135deg, #6366f1, #8b5cf6 40%, #ec4899); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 2px 8px rgba(139,92,246,0.2)); }
+h2 { color: #1e293b; font-size: 22px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.3px; }
+h3 { color: #1e293b; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.subtitle { color: #64748b; text-align: center; font-size: 14px; margin-bottom: 22px; font-weight: 500; }
+.subtitle strong { background: linear-gradient(135deg, #6366f1, #ec4899); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
+.label { display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 8px; }
+.input { width: 100%; padding: 15px 18px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 15px; font-weight: 500; outline: none; transition: all 0.25s; background: #f8fafc; color: #1e293b; margin-bottom: 14px; }
+.input:focus { border-color: #8b5cf6; background: #fff; box-shadow: 0 0 0 4px rgba(139,92,246,0.15); transform: translateY(-1px); }
+.btn { position: relative; overflow: hidden; width: 100%; padding: 16px 22px; border: none; border-radius: 14px; font-size: 15px; font-weight: 800; cursor: pointer; transition: all 0.3s; letter-spacing: 0.3px; color: #1e293b; }
+.btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent); transition: left 0.6s; pointer-events: none; }
+.btn:hover::before { left: 100%; }
+.btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6 50%, #ec4899); color: #fff; box-shadow: 0 10px 25px -5px rgba(99,102,241,0.55); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 18px 35px -5px rgba(99,102,241,0.65); }
+.btn-primary:active { transform: translateY(0) scale(0.98); }
+.btn-secondary { background: linear-gradient(135deg, #f1f5f9, #e2e8f0); color: #475569; margin-top: 10px; box-shadow: 0 4px 10px -2px rgba(15,23,42,0.08); }
+.btn-secondary:hover { transform: translateY(-2px); }
+.btn-secondary:active { transform: translateY(0) scale(0.98); }
+.btn-back { background: none; border: none; color: #8b5cf6; font-size: 14px; font-weight: 700; cursor: pointer; padding: 6px 12px; margin-bottom: 14px; border-radius: 10px; }
+.btn-back:hover { background: rgba(139,92,246,0.1); }
+.btn-logout { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #dc2626; border: none; padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; }
+.error { color: #dc2626; font-size: 13px; text-align: center; margin-top: 10px; min-height: 18px; font-weight: 600; }
+.loading { color: #8b5cf6; font-size: 13px; text-align: center; margin-top: 10px; font-weight: 600; }
+.header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; gap: 8px; }
+.header-left { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.user-chip { background: linear-gradient(135deg, #ede9fe, #e0e7ff); color: #6d28d9; padding: 8px 14px; border-radius: 12px; font-size: 12px; font-weight: 800; box-shadow: 0 2px 8px rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.15); }
+.uid-chip { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; padding: 8px 12px; border-radius: 12px; font-size: 11px; font-weight: 800; border: 1px solid #f59e0b; box-shadow: 0 2px 8px rgba(245,158,11,0.15); font-family: 'Courier New', monospace; letter-spacing: 0.5px; cursor: pointer; transition: transform 0.15s; }
+.uid-chip:active { transform: scale(0.95); }
+.online-chip { background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #065f46; padding: 8px 12px; border-radius: 12px; font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 6px; border: 1px solid #10b981; box-shadow: 0 2px 8px rgba(16,185,129,0.15); }
+.online-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } }
+.grid-kelas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 8px; }
+.kelas-btn { aspect-ratio: 1; border: 2px solid #e2e8f0; background: #fff; border-radius: 20px; cursor: pointer; transition: all 0.3s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 4px 12px -2px rgba(15,23,42,0.08); }
+.kelas-btn:hover { transform: translateY(-4px) scale(1.03); box-shadow: 0 16px 28px -6px rgba(99,102,241,0.35); border-color: #8b5cf6; }
+.kelas-btn .num { font-size: 32px; font-weight: 900; line-height: 1; }
+.kelas-btn .txt { font-size: 10px; color: #94a3b8; font-weight: 800; letter-spacing: 1px; }
+.kelas-btn:nth-child(1) { border-color: #fde68a; background: linear-gradient(160deg, #fffbeb, #fff); } .kelas-btn:nth-child(1) .num { color: #f59e0b; }
+.kelas-btn:nth-child(2) { border-color: #bfdbfe; background: linear-gradient(160deg, #eff6ff, #fff); } .kelas-btn:nth-child(2) .num { color: #3b82f6; }
+.kelas-btn:nth-child(3) { border-color: #fbcfe8; background: linear-gradient(160deg, #fdf2f8, #fff); } .kelas-btn:nth-child(3) .num { color: #ec4899; }
+.kelas-btn:nth-child(4) { border-color: #ddd6fe; background: linear-gradient(160deg, #f5f3ff, #fff); } .kelas-btn:nth-child(4) .num { color: #8b5cf6; }
+.kelas-btn:nth-child(5) { border-color: #a7f3d0; background: linear-gradient(160deg, #ecfdf5, #fff); } .kelas-btn:nth-child(5) .num { color: #10b981; }
+.kelas-btn:nth-child(6) { border-color: #fecaca; background: linear-gradient(160deg, #fef2f2, #fff); } .kelas-btn:nth-child(6) .num { color: #ef4444; }
+.grid-semester { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.sem-btn { padding: 22px 12px; border: 2px solid #e2e8f0; background: #fff; border-radius: 20px; cursor: pointer; transition: all 0.3s; text-align: center; position: relative; box-shadow: 0 4px 12px -2px rgba(15,23,42,0.08); }
+.sem-btn:hover { transform: translateY(-3px); border-color: #8b5cf6; }
+.sem-btn.active { border-color: #8b5cf6; background: linear-gradient(160deg, #ede9fe, #fdf2f8); }
+.sem-btn.active::before { content: '✓'; position: absolute; top: 8px; right: 8px; background: #8b5cf6; color: #fff; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.sem-num { font-size: 36px; font-weight: 900; line-height: 1; background: linear-gradient(135deg, #6366f1, #ec4899); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+.sem-label { font-size: 13px; font-weight: 800; color: #1e293b; margin-top: 6px; }
+.sem-date { font-size: 10px; color: #94a3b8; margin-top: 4px; font-weight: 600; }
+.info-box { background: linear-gradient(135deg, #fff7ed, #ffedd5); border-left: 4px solid #f59e0b; padding: 14px 16px; border-radius: 12px; font-size: 12px; color: #78350f; line-height: 1.7; margin-bottom: 14px; font-weight: 600; }
+.info-box b { color: #c2410c; }
+.toggle-wrap { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #475569; margin-top: 12px; cursor: pointer; font-weight: 600; padding: 10px 12px; border-radius: 10px; }
+.toggle-wrap input { width: 18px; height: 18px; accent-color: #8b5cf6; cursor: pointer; flex-shrink: 0; }
+</style>
+<style>
+.resume-banner { display: none; background: linear-gradient(135deg, #fef3c7, #fed7aa); border: 2px solid #f59e0b; border-radius: 16px; padding: 16px; margin-bottom: 18px; }
+.resume-banner.show { display: block; }
+.resume-title { font-size: 13px; font-weight: 800; color: #92400e; margin-bottom: 6px; }
+.resume-info { font-size: 12px; color: #78350f; line-height: 1.6; font-weight: 600; margin-bottom: 12px; }
+.resume-actions { display: flex; gap: 8px; }
+.resume-actions button { flex: 1; padding: 10px 12px; border-radius: 10px; border: none; font-size: 12px; font-weight: 800; cursor: pointer; }
+.resume-actions .btn-resume-go { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
+.resume-actions .btn-resume-del { background: rgba(255,255,255,0.7); color: #92400e; border: 1px solid #f59e0b; }
+.search-input { margin-bottom: 14px !important; }
+.grid-mapel { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; max-height: 55vh; overflow-y: auto; }
+.mapel-btn { padding: 14px 12px; border: 2px solid #e2e8f0; background: #fff; border-radius: 14px; cursor: pointer; transition: all 0.25s; text-align: left; display: flex; align-items: center; gap: 10px; }
+.mapel-btn:hover { border-color: #8b5cf6; background: linear-gradient(135deg, #faf5ff, #fdf2f8); transform: translateY(-3px); }
+.mapel-icon { font-size: 24px; flex-shrink: 0; }
+.mapel-name { font-size: 12px; font-weight: 700; color: #334155; line-height: 1.35; }
+#screenQuiz { padding: 0; align-items: stretch; justify-content: flex-start; }
+.quiz-container { width: 100%; max-width: 660px; margin: 0 auto; display: flex; flex-direction: column; min-height: 100vh; background: #fff; }
+.quiz-header { padding: 16px 20px; border-bottom: 1px solid #f1f5f9; background: linear-gradient(180deg, #fff, #fafbff); position: sticky; top: 0; z-index: 10; }
+.quiz-header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; }
+.btn-quiz-exit { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #dc2626; border: none; padding: 7px 12px; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; }
+.live-score { background: linear-gradient(135deg, #10b981, #059669); color: #fff; padding: 7px 12px; border-radius: 10px; font-size: 12px; font-weight: 800; }
+.quiz-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; }
+#quizSubject { font-size: 14px; font-weight: 800; color: #1e293b; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.quiz-badge { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 10px; flex-shrink: 0; }
+.progress-bar { height: 10px; background: #f1f5f9; border-radius: 5px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #8b5cf6 50%, #ec4899); width: 0%; transition: width 0.4s; border-radius: 5px; position: relative; overflow: hidden; }
+.progress-fill::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent); animation: shimmer 2s infinite; }
+@keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+.quiz-sub-info { font-size: 11px; color: #94a3b8; margin-top: 8px; font-weight: 700; }
+.quiz-body { flex: 1; padding: 26px 22px; overflow-y: auto; }
+.question-type { display: inline-block; background: linear-gradient(135deg, #ede9fe, #e0e7ff); color: #6d28d9; font-size: 10px; font-weight: 900; padding: 5px 12px; border-radius: 8px; letter-spacing: 1.2px; margin-bottom: 16px; }
+.question-type.essay { background: linear-gradient(135deg, #fef3c7, #fed7aa); color: #b45309; }
+.question-text { font-size: 16px; line-height: 1.7; color: #1e293b; margin-bottom: 24px; white-space: pre-line; font-weight: 600; }
+.options { display: flex; flex-direction: column; gap: 12px; }
+.options.locked { pointer-events: none; }
+.option-btn { display: flex; align-items: center; gap: 14px; padding: 16px; border: 2px solid #e2e8f0; background: #fff; border-radius: 16px; cursor: pointer; transition: all 0.25s; text-align: left; font-size: 14px; color: #334155; font-weight: 600; }
+.option-btn:hover { border-color: #8b5cf6; background: #faf5ff; transform: translateX(3px); }
+.option-btn.selected { border-color: #8b5cf6; background: linear-gradient(135deg, #f5f3ff, #fdf2f8); }
+.option-btn.selected .option-label { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; }
+.option-btn.correct { border-color: #10b981; background: linear-gradient(135deg, #ecfdf5, #d1fae5); }
+.option-btn.correct .option-label { background: linear-gradient(135deg, #10b981, #059669); color: #fff; }
+.option-btn.wrong { border-color: #ef4444; background: linear-gradient(135deg, #fef2f2, #fee2e2); }
+.option-btn.wrong .option-label { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; }
+.option-label { width: 36px; height: 36px; border-radius: 50%; background: #f1f5f9; color: #64748b; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; flex-shrink: 0; transition: all 0.25s; }
+.option-text { flex: 1; line-height: 1.5; }
+.essay-input { width: 100%; min-height: 200px; padding: 18px; border: 2px solid #e2e8f0; border-radius: 16px; font-size: 14px; font-family: inherit; resize: vertical; outline: none; background: #f8fafc; color: #1e293b; line-height: 1.7; }
+.essay-input:focus { border-color: #8b5cf6; background: #fff; box-shadow: 0 0 0 4px rgba(139,92,246,0.15); }
+.feedback { display: none; padding: 14px 16px; border-radius: 14px; margin-top: 18px; font-weight: 700; font-size: 13px; line-height: 1.5; }
+.feedback.show { display: block; }
+.feedback.correct { background: linear-gradient(135deg, #d1fae5, #a7f3d0); color: #065f46; border-left: 4px solid #10b981; }
+.feedback.wrong { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #7f1d1d; border-left: 4px solid #ef4444; }
+.feedback b { font-weight: 900; }
+.quiz-footer { display: flex; gap: 10px; padding: 18px 22px; border-top: 1px solid #f1f5f9; background: linear-gradient(180deg, #fafbff, #fff); }
+.quiz-footer .btn { flex: 1; }
+.quiz-footer .btn-secondary { margin-top: 0; }
+.quiz-footer .btn-prev { background: linear-gradient(135deg, #f1f5f9, #e2e8f0); color: #475569; border: none; padding: 16px 12px; border-radius: 14px; font-size: 14px; font-weight: 800; cursor: pointer; flex: 0.85; }
+.quiz-footer .btn-prev:disabled { opacity: 0.4; cursor: not-allowed; }
+.result-emoji { font-size: 80px; text-align: center; margin-bottom: 12px; animation: pop 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes pop { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.15); } 100% { transform: scale(1); opacity: 1; } }
+.score-box { background: linear-gradient(135deg, #6366f1, #8b5cf6 50%, #ec4899); color: #fff; border-radius: 24px; padding: 30px; text-align: center; margin: 20px 0; position: relative; overflow: hidden; }
+.score-box::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%); animation: rotate 8s linear infinite; }
+@keyframes rotate { to { transform: rotate(360deg); } }
+.score-num { font-size: 68px; font-weight: 900; line-height: 1; position: relative; }
+.score-label { font-size: 13px; opacity: 0.95; margin-top: 8px; position: relative; font-weight: 700; }
+.result-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 22px; }
+.stat-item { padding: 16px 8px; border-radius: 16px; text-align: center; border: 2px solid #f1f5f9; }
+.stat-item:nth-child(1) { border-color: #a7f3d0; background: linear-gradient(160deg, #ecfdf5, #fff); }
+.stat-item:nth-child(2) { border-color: #fecaca; background: linear-gradient(160deg, #fef2f2, #fff); }
+.stat-item:nth-child(3) { border-color: #bfdbfe; background: linear-gradient(160deg, #eff6ff, #fff); }
+.stat-num { font-size: 22px; font-weight: 900; line-height: 1.2; }
+.stat-item:nth-child(1) .stat-num { color: #10b981; }
+.stat-item:nth-child(2) .stat-num { color: #ef4444; }
+.stat-item:nth-child(3) .stat-num { color: #3b82f6; }
+.stat-lbl { font-size: 10px; color: #64748b; margin-top: 4px; font-weight: 800; letter-spacing: 0.5px; }
+.modal { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.65); z-index: 1000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(8px); }
+.modal.active { display: flex; }
+.modal-card { background: #fff; border-radius: 26px; padding: 32px 24px; max-width: 420px; width: 100%; text-align: center; animation: modalIn 0.4s cubic-bezier(0.16,1,0.3,1); position: relative; overflow: hidden; }
+.modal-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #6366f1, #8b5cf6, #ec4899); }
+@keyframes modalIn { from { transform: scale(0.85) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+.modal-icon { font-size: 58px; margin-bottom: 14px; }
+.modal-actions { display: flex; flex-direction: column; gap: 10px; margin-top: 22px; }
+.modal-actions .btn-secondary { margin-top: 0; }
+.modal-actions .btn { font-size: 14px; padding: 14px 18px; }
+.pause-overlay { display: none; position: fixed; inset: 0; background: linear-gradient(135deg, #6366f1, #8b5cf6 50%, #ec4899); z-index: 900; align-items: center; justify-content: center; padding: 20px; }
+.pause-overlay.active { display: flex; }
+.pause-card { background: #fff; border-radius: 26px; padding: 36px 26px; max-width: 400px; width: 100%; text-align: center; }
+.pause-icon { font-size: 68px; margin-bottom: 14px; }
+.pause-card .btn { margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<div class="screen active" id="screenLogin">
+  <div class="card">
+    <div class="logo">🎓</div>
+    <h1>Quizzep</h1>
+    <p class="subtitle">Belajar jadi lebih seru!</p>
+    <label class="label">Nama Lengkap</label>
+    <input type="text" id="inputName" class="input" placeholder="Masukkan namamu..." autocomplete="off">
+    <button class="btn btn-primary" id="btnLogin">Masuk 🚀</button>
+    <p class="error" id="loginError"></p>
+    <p class="loading" id="loginLoading" style="display:none;">Menghubungkan ke server...</p>
+  </div>
+</div>
+
+<div class="screen" id="screenKelas">
+  <div class="card">
+    <div class="header-top">
+      <div class="header-left">
+        <span class="user-chip" id="userChip">👤 User</span>
+        <span class="uid-chip" id="uidChip" style="display:none;">🔑 -</span>
+        <span class="online-chip" id="onlineChip" style="display:none;">
+          <span class="online-dot"></span>
+          <span id="onlineCount">0</span> online
+        </span>
+      </div>
+      <button class="btn-logout" id="btnLogout">Keluar</button>
+    </div>
+    <div class="resume-banner" id="resumeBanner">
+      <div class="resume-title">⏸️ Ada Kuis yang Belum Selesai</div>
+      <div class="resume-info" id="resumeInfo">-</div>
+      <div class="resume-actions">
+        <button class="btn-resume-go" id="btnResumeGo">▶️ Lanjutkan</button>
+        <button class="btn-resume-del" id="btnResumeDel">🗑️ Hapus</button>
+      </div>
+    </div>
+    <h2>Pilih Kelas</h2>
+    <p class="subtitle">Semester otomatis saat ini: <strong id="autoSemesterInfo">-</strong></p>
+    <div class="grid-kelas" id="gridKelas"></div>
+  </div>
+</div>
+
+<div class="screen" id="screenSemester">
+  <div class="card">
+    <button class="btn-back" id="backToKelas">← Kembali</button>
+    <h2>Pilih Semester</h2>
+    <p class="subtitle">Kelas <strong id="semKelasLabel">-</strong></p>
+    <div class="info-box" id="semInfoBox">Memuat info semester...</div>
+    <div class="grid-semester">
+      <button class="sem-btn" data-sem="1">
+        <div class="sem-num">1</div>
+        <div class="sem-label">Semester 1</div>
+        <div class="sem-date">1 Juli – 31 Oktober</div>
+      </button>
+      <button class="sem-btn" data-sem="2">
+        <div class="sem-num">2</div>
+        <div class="sem-label">Semester 2</div>
+        <div class="sem-date">1 November – 30 Juni</div>
+      </button>
+    </div>
+    <label class="toggle-wrap">
+      <input type="checkbox" id="chkAuto" checked>
+      <span>Gunakan semester otomatis (sesuai tanggal hari ini)</span>
+    </label>
+  </div>
+</div>
+
+<div class="screen" id="screenMapel">
+  <div class="card card-wide">
+    <button class="btn-back" id="backToSemester">← Kembali</button>
+    <h2>Pilih Mata Pelajaran</h2>
+    <p class="subtitle">Kelas <strong id="mapelKelasLabel">-</strong> • Semester <strong id="mapelSemLabel">-</strong></p>
+    <input type="text" class="input search-input" id="searchMapel" placeholder="🔍 Cari mata pelajaran...">
+    <div class="grid-mapel" id="gridMapel"></div>
+  </div>
+</div>
+
+<div class="screen" id="screenQuiz">
+  <div class="quiz-container">
+    <div class="quiz-header">
+      <div class="quiz-header-top">
+        <button class="btn-quiz-exit" id="btnQuizExit">← Keluar</button>
+        <div class="live-score" id="liveScore">⭐ Skor: 0</div>
+      </div>
+      <div class="quiz-info">
+        <span id="quizSubject">-</span>
+        <span class="quiz-badge" id="quizProgressLabel">1 / 20</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="quiz-sub-info" id="quizSubInfo">Soal 1 dari 20</div>
+    </div>
+    <div class="quiz-body">
+      <div class="question-type" id="questionType">PILIHAN GANDA</div>
+      <div class="question-text" id="questionText">Memuat soal...</div>
+      <div class="options" id="optionsContainer"></div>
+      <textarea class="essay-input" id="essayInput" placeholder="Tulis jawabanmu di sini..." style="display:none;"></textarea>
+      <div class="feedback" id="feedbackBox"></div>
+    </div>
+    <div class="quiz-footer">
+      <button class="btn-prev" id="btnPrevQ">← Sebelumnya</button>
+      <button class="btn btn-secondary" id="btnSkip">Lewati</button>
+      <button class="btn btn-primary" id="btnNextQ">Selanjutnya →</button>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="screenHasil">
+  <div class="card">
+    <div class="result-emoji" id="resultEmoji">🎉</div>
+    <h2 id="resultTitle" style="text-align:center">Kuis Selesai!</h2>
+    <div class="score-box">
+      <div class="score-num" id="scoreNum">0</div>
+      <div class="score-label">Nilai Pilihan Ganda (dari 100)</div>
+    </div>
+    <div class="result-stats">
+      <div class="stat-item"><div class="stat-num" id="statBenar">0</div><div class="stat-lbl">BENAR</div></div>
+      <div class="stat-item"><div class="stat-num" id="statSalah">0</div><div class="stat-lbl">SALAH</div></div>
+      <div class="stat-item"><div class="stat-num" id="statEssay">0</div><div class="stat-lbl">ESSAY</div></div>
+    </div>
+    <button class="btn btn-primary" id="btnUlangi">🔄 Ulangi Kuis</button>
+    <button class="btn btn-secondary" id="btnGantiMapel">📚 Ganti Mata Pelajaran</button>
+  </div>
+</div>
+
+<div class="modal" id="modalConfirm">
+  <div class="modal-card">
+    <div class="modal-icon" id="modalIcon">⏸️</div>
+    <h3 id="modalTitle">Hebat! Sudah 10 soal.</h3>
+    <p id="modalDesc" style="color:#718096;font-size:14px;line-height:1.5">Apakah kamu ingin lanjut ke soal berikutnya?</p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="btnIstirahat">😴 Tidak, saya ingin istirahat</button>
+      <button class="btn btn-primary" id="btnLanjut">🚀 Ya, saya ingin lanjut</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="modalExit">
+  <div class="modal-card">
+    <div class="modal-icon">🚪</div>
+    <h3>Keluar dari Kuis?</h3>
+    <p style="color:#718096;font-size:14px;line-height:1.5;margin-top:8px">Progres kamu akan <b>disimpan otomatis</b>. Kamu bisa lanjut kapan saja dari menu utama.</p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" id="btnExitCancel">↩️ Batal, lanjut kuis</button>
+      <button class="btn btn-primary" id="btnExitConfirm">🚪 Ya, keluar sekarang</button>
+    </div>
+  </div>
+</div>
+
+<div class="pause-overlay" id="pauseOverlay">
+  <div class="pause-card">
+    <div class="pause-icon">☕</div>
+    <h3>Istirahat Dulu</h3>
+    <p style="color:#718096;font-size:14px;line-height:1.5;margin-top:8px">Jawabanmu sudah tersimpan. Kamu bisa lanjut kapan saja.</p>
+    <button class="btn btn-primary" id="btnResume">▶️ Lanjutkan Kuis</button>
+    <button class="btn btn-secondary" id="btnExit">🏠 Keluar ke Menu</button>
+  </div>
+</div>
+<script type="module">
+// @ts-nocheck
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
+import { getAuth, signInAnonymously, signOut } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+import { getDatabase, ref, onValue, onDisconnect, set, remove, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCjgYUZCftQ8DxcazUl9nbqEITOS4h_bbY",
+  authDomain: "quizzep-f271b.firebaseapp.com",
+  projectId: "quizzep-f271b",
+  storageBucket: "quizzep-f271b.firebasestorage.app",
+  messagingSenderId: "722342050985",
+  appId: "1:722342050985:web:407721a075732c6d1c3db8",
+  measurementId: "G-ZGMM9BN4F6"
+};
+
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth(app);
+let db = null;
+try { db = getDatabase(app); } catch (e) { console.warn('RTDB belum diaktifkan:', e); }
+
+const state = {
+  user: null, name: '', kelas: null, semester: null, mapel: null,
+  questions: [], currentIndex: 0, answers: [], score: 0,
+  benar: 0, salah: 0, essayFilled: 0, paused: false, revealed: []
+};
+
+const $ = (id) => document.getElementById(id);
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+window.showScreen = showScreen;
+
+const MAPEL_SMP = [
+  { n: 'Pendidikan Agama & Budi Pekerti', i: '🕌' },
+  { n: 'Pendidikan Pancasila', i: '🇮🇩' },
+  { n: 'Bahasa Indonesia', i: '📖' },
+  { n: 'Matematika', i: '🔢' },
+  { n: 'Bahasa Inggris', i: '🌐' },
+  { n: 'Ilmu Pengetahuan Alam (IPA)', i: '🔬' },
+  { n: 'Ilmu Pengetahuan Sosial (IPS)', i: '🌍' },
+  { n: 'PJOK', i: '⚽' },
+  { n: 'Informatika', i: '💻' },
+  { n: 'Seni Budaya (Musik/Rupa/Tari/Teater)', i: '🎨' },
+  { n: 'Prakarya (Budidaya/Kerajinan/Rekayasa/Pengolahan)', i: '🛠️' },
+  { n: 'Bahasa Daerah', i: '🗣️' },
+  { n: 'Bahasa Mandarin', i: '🀄' },
+  { n: 'Bahasa Jepang', i: '🇯🇵' },
+  { n: 'Bahasa Arab', i: '📜' },
+  { n: 'Muatan Lokal', i: '🏘️' }
+];
+
+const MAPEL_SMA = [
+  { n: 'Pendidikan Agama & Budi Pekerti', i: '🕌' },
+  { n: 'Pendidikan Pancasila', i: '🇮🇩' },
+  { n: 'Bahasa Indonesia', i: '📖' },
+  { n: 'Matematika (Wajib)', i: '🔢' },
+  { n: 'Matematika Tingkat Lanjut', i: '📐' },
+  { n: 'Bahasa Inggris', i: '🌐' },
+  { n: 'Bahasa Inggris Tingkat Lanjut', i: '🔤' },
+  { n: 'Sejarah', i: '📜' },
+  { n: 'Fisika', i: '⚛️' },
+  { n: 'Kimia', i: '🧪' },
+  { n: 'Biologi', i: '🧬' },
+  { n: 'Geografi', i: '🗺️' },
+  { n: 'Ekonomi', i: '💹' },
+  { n: 'Sosiologi', i: '👥' },
+  { n: 'Antropologi', i: '🧑‍🤝‍🧑' },
+  { n: 'PJOK', i: '⚽' },
+  { n: 'Informatika', i: '💻' },
+  { n: 'Seni Budaya (Musik/Rupa/Tari/Teater)', i: '🎨' },
+  { n: 'Prakarya & Kewirausahaan', i: '💼' },
+  { n: 'Bahasa Daerah', i: '🗣️' },
+  { n: 'Bahasa Mandarin', i: '🀄' },
+  { n: 'Bahasa Jepang', i: '🇯🇵' },
+  { n: 'Bahasa Arab', i: '📜' },
+  { n: 'Bahasa Jerman', i: '🇩🇪' },
+  { n: 'Bahasa Prancis', i: '🇫🇷' },
+  { n: 'Bahasa Korea', i: '🇰🇷' },
+  { n: 'Muatan Lokal', i: '🏘️' },
+  { n: 'Projek IPAS (SMK)', i: '🔎' },
+  { n: 'Akuntansi Dasar', i: '📊' },
+  { n: 'Ekonomi Bisnis', i: '📈' },
+  { n: 'Administrasi Umum', i: '🗂️' },
+  { n: 'Simulasi & Komunikasi Digital', i: '🖥️' },
+  { n: 'Pemrograman Dasar', i: '👨‍💻' },
+  { n: 'Sistem Komputer', i: '🖲️' },
+  { n: 'Jaringan Dasar & TKJ', i: '🌐' },
+  { n: 'Desain Grafis / Multimedia', i: '🎞️' },
+  { n: 'Rekayasa Perangkat Lunak (RPL)', i: '📱' },
+  { n: 'Teknik Kendaraan Ringan (TKR)', i: '🚗' },
+  { n: 'Teknik Instalasi Tenaga Listrik', i: '⚡' },
+  { n: 'Teknik Mesin', i: '🔧' },
+  { n: 'Tata Boga', i: '🍳' },
+  { n: 'Tata Busana', i: '👗' },
+  { n: 'Perhotelan', i: '🏨' },
+  { n: 'Farmasi', i: '💊' },
+  { n: 'Keperawatan', i: '🩺' }
+];
+  function shuffle(a) {
+  const arr = [...a];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function genMath(kelas) {
+  const qs = []; const used = new Set(); let guard = 0;
+  while (qs.length < 15 && guard < 800) {
+    guard++;
+    let text, ans;
+    let t = 0;
+    if (kelas <= 7) {
+      t = Math.floor(Math.random() * 4);
+      if (t === 0) { const a = Math.floor(Math.random()*30)+5, b = Math.floor(Math.random()*30)+5; ans = a+b; text = `Hasil dari ${a} + ${b} adalah...`; }
+      else if (t === 1) { const a = Math.floor(Math.random()*50)+30, b = Math.floor(Math.random()*30)+2; ans = a-b; text = `Hasil dari ${a} − ${b} adalah...`; }
+      else if (t === 2) { const a = Math.floor(Math.random()*12)+2, b = Math.floor(Math.random()*12)+2; ans = a*b; text = `Hasil dari ${a} × ${b} adalah...`; }
+      else { const b = Math.floor(Math.random()*10)+2, q = Math.floor(Math.random()*12)+2, a = b*q; ans = q; text = `Hasil dari ${a} ÷ ${b} adalah...`; }
+    } else if (kelas === 8) {
+      t = Math.floor(Math.random() * 4);
+      if (t === 0) { const x = Math.floor(Math.random()*15)+3, c = Math.floor(Math.random()*20)+5; ans = x; text = `Nilai x dari 2x + ${c} = ${2*x+c} adalah...`; }
+      else if (t === 1) { const a = Math.floor(Math.random()*8)+3, b = Math.floor(Math.random()*8)+4; const s = a*a + b*b; ans = Math.round(Math.sqrt(s)); if (ans*ans !== s) continue; text = `Segitiga siku-siku sisi ${a} dan ${b}. Sisi miring = ...`; }
+      else if (t === 2) { const a = Math.floor(Math.random()*10)+2, b = Math.floor(Math.random()*10)+2; ans = a*a + b*b; text = `Hasil dari ${a}² + ${b}² = ...`; }
+      else { const x = Math.floor(Math.random()*10)+2; ans = x; text = `Jika ${x} + y = ${x + x}, maka y = ...`; }
+    } else if (kelas === 9) {
+      t = Math.floor(Math.random() * 4);
+      if (t === 0) { const a = Math.floor(Math.random()*8)+2; ans = a*a*a; text = `Hasil dari ${a}³ adalah...`; }
+      else if (t === 1) { const a = Math.floor(Math.random()*15)+3; ans = a; text = `Akar dari ${a*a} adalah...`; }
+      else if (t === 2) { const a = Math.floor(Math.random()*6)+2, b = Math.floor(Math.random()*6)+2; ans = a*b; text = `Hasil dari ${a} × ${b} = ...`; }
+      else { const a = Math.floor(Math.random()*20)+10; ans = Math.round(a*0.25); text = `25% dari ${a} adalah...`; }
+    } else if (kelas === 10) {
+      t = Math.floor(Math.random() * 4);
+      if (t === 0) { const base = Math.floor(Math.random()*4)+2, exp = Math.floor(Math.random()*4)+2; ans = Math.pow(base, exp); text = `Nilai dari ${base}^${exp} adalah...`; }
+      else if (t === 1) { const base = [2,3,5][Math.floor(Math.random()*3)], p = Math.floor(Math.random()*4)+2, v = Math.pow(base,p); ans = p; text = `Nilai dari log_${base}(${v}) adalah...`; }
+      else if (t === 2) { const a = Math.floor(Math.random()*8)+2, b = Math.floor(Math.random()*8)+2; ans = (a+b+a-b)/2; text = `Jika x + y = ${a+b} dan x − y = ${a-b}, maka x = ...`; }
+      else { const a = Math.floor(Math.random()*5)+2; ans = a; text = `Hasil dari ${a}! / ${a-1}! adalah...`; }
+    } else if (kelas === 11) {
+      t = Math.floor(Math.random() * 4);
+      if (t === 0) { const a = Math.floor(Math.random()*5)+2, b = Math.floor(Math.random()*5)+2, n = Math.floor(Math.random()*5)+5; ans = a + (n-1)*b; text = `Suku ke-${n} barisan aritmetika a=${a}, b=${b} adalah...`; }
+      else if (t === 1) { const a = Math.floor(Math.random()*4)+2, r = Math.floor(Math.random()*3)+2, n = Math.floor(Math.random()*3)+4; ans = a*Math.pow(r,n-1); text = `Suku ke-${n} barisan geometri a=${a}, r=${r} adalah...`; }
+      else if (t === 2) { const a = Math.floor(Math.random()*6)+2; ans = a*(a+1)/2; text = `Jumlah 1 + 2 + ... + ${a} = ...`; }
+      else { const a = Math.floor(Math.random()*6)+2, b = Math.floor(Math.random()*6)+2; ans = a*a - b*b; text = `Hasil dari ${a}² − ${b}² = ...`; }
+    } else {
+      t = Math.floor(Math.random() * 4);
+      if (t === 0) { const a = Math.floor(Math.random()*6)+2; ans = 2*a; text = `Turunan f(x)=${a}x² adalah f'(x)=... (koef x)`; }
+      else if (t === 1) { const a = Math.floor(Math.random()*8)+2; ans = a*(a+1)/2; text = `∫₀^${a} x dx = ...`; }
+      else if (t === 2) { const v = Math.pow(10, Math.floor(Math.random()*4)+2); ans = Math.log10(v); text = `Nilai dari log ${v} adalah...`; }
+      else { const a = Math.floor(Math.random()*4)+2, b = Math.floor(Math.random()*4)+2; ans = b; text = `Turunan f(x)=${a}x² + ${b}x adalah... (koef x)`; }
+    }
+    if (!text || used.has(text)) continue;
+    used.add(text);
+    const wrongs = new Set(); let g = 0;
+    while (wrongs.size < 3 && g < 60) {
+      g++;
+      const delta = Math.floor(Math.random()*10)+1;
+      const sign = Math.random() < 0.5 ? -1 : 1;
+      const w = ans + sign*delta;
+      if (w !== ans && w >= 0 && Number.isFinite(w)) wrongs.add(w);
+    }
+    if (wrongs.size < 3) continue;
+    const opts = shuffle([ans, ...wrongs]).map(String);
+    qs.push({ q: text, o: opts, c: opts.indexOf(String(ans)) });
+  }
+  return qs;
+}
+
+const BANK_SOAL = {
+  'Matematika': { gen: 'math' },
+
+  'Bahasa Indonesia': {
+    mcq: [
+      { q: 'Ide pokok paragraf biasanya terletak pada...', o: ['Kalimat utama','Kalimat penjelas','Kalimat terakhir','Kata penghubung'], c: 0, k: [7,8,9] },
+      { q: 'Teks yang berisi ajakan kepada pembaca disebut...', o: ['Narasi','Persuasi','Deskripsi','Eksposisi'], c: 1, k: [7,8,9] },
+      { q: 'Sinonim kata "pandai" adalah...', o: ['Bodoh','Cerdas','Malas','Rajin'], c: 1, k: [7,8,9] },
+      { q: 'Antonim dari "gelap" adalah...', o: ['Suram','Redup','Terang','Kelam'], c: 2, k: [7,8,9] },
+      { q: 'Majas "Wajahnya seperti bulan purnama" termasuk...', o: ['Metafora','Personifikasi','Simile/Asosiasi','Hiperbola'], c: 2, k: [7,8,9] },
+      { q: 'Struktur teks eksposisi adalah...', o: ['Orientasi-komplikasi-resolusi','Tesis-argumentasi-penegasan ulang','Pembuka-isi-penutup','Abstraksi-orientasi-koda'], c: 1, k: [7,8,9] },
+      { q: 'Puisi lama berisi nasihat, 2 baris disebut...', o: ['Pantun','Syair','Gurindam','Karmina'], c: 2, k: [7,8,9] },
+      { q: 'Cerita rakyat asal-usul tempat disebut...', o: ['Fabel','Legenda','Mite','Sage'], c: 1, k: [7,8,9] },
+      { q: 'Kalimat opini adalah...', o: ['Indonesia 38 provinsi.','Menurut saya, film itu bagus.','Air mendidih 100°C.','Jakarta di Jawa.'], c: 1, k: [7,8,9] },
+      { q: 'Ciri utama teks berita adalah...', o: ['Fiktif','Faktual dan aktual','Nasihat','Puitis'], c: 1, k: [7,8,9] },
+      { q: 'Teks prosedur berisi...', o: ['Langkah membuat sesuatu','Cerita khayalan','Nasihat hidup','Deskripsi tempat'], c: 0, k: [7,8,9] },
+      { q: 'Latar tempat dalam cerita disebut...', o: ['Setting','Alur','Tema','Tokoh'], c: 0, k: [7,8,9] },
+      { q: 'Kata baku yang benar adalah...', o: ['Aktifitas','Aktivitas','Aktipitas','Aktiviti'], c: 1, k: [7,8,9] },
+      { q: 'Kalimat efektif adalah...', o: ['Panjang berbelit','Singkat, jelas, mudah dipahami','Banyak majas','Banyak kata asing'], c: 1, k: [7,8,9] },
+      { q: 'Kata "membaca" jadi kata benda...', o: ['Baca','Pembaca','Membacakan','Terbaca'], c: 1, k: [7,8,9] },
+      { q: 'Teks laporan hasil observasi berisi...', o: ['Hasil pengamatan objek rinci','Cerita fiksi','Nasihat','Deskripsi puisi'], c: 0, k: [10,11,12] },
+      { q: 'Struktur teks negosiasi...', o: ['Orientasi-pengajuan-penawaran-persetujuan','Tesis-argumen-penegasan','Pembuka-isi-penutup','Abstraksi-orientasi-krisis-koda'], c: 0, k: [10,11,12] },
+      { q: 'Hikayat termasuk karya sastra...', o: ['Puisi modern','Prosa lama','Drama','Pantun'], c: 1, k: [10,11,12] },
+      { q: 'Majas ironi berarti...', o: ['Melebih-lebihkan','Menyindir berlawanan','Menyamakan dua hal','Membandingkan benda'], c: 1, k: [10,11,12] },
+      { q: 'Teks editorial dimuat di...', o: ['Rubrik opini surat kabar','Iklan produk','Buku pelajaran','Katalog'], c: 0, k: [10,11,12] },
+      { q: 'Debat dua pihak bertujuan...', o: ['Menang sendiri','Memperoleh kesepakatan/kemenangan argumen','Bersenda gurau','Bercerita'], c: 1, k: [10,11,12] },
+      { q: 'Cerpen biasanya memiliki satu...', o: ['Konflik utama','Tokoh','Latar','Tema'], c: 0, k: [10,11,12] },
+      { q: 'Resensi adalah teks berisi...', o: ['Ulasan buku/karya','Langkah membuat buku','Cerita fiksi','Nasihat'], c: 0, k: [10,11,12] },
+      { q: 'Kata "efektif" berarti...', o: ['Boros','Bermanfaat dan tepat guna','Cepat rusak','Sulit dipakai'], c: 1, k: [10,11,12] },
+      { q: 'Kritik dalam teks editorial bertujuan...', o: ['Menjelekkan','Memperbaiki keadaan','Menghibur','Menjual produk'], c: 1, k: [10,11,12] }
+    ],
+    essay: [
+      { q: 'Buat paragraf argumentasi tentang pentingnya membaca buku bagi pelajar SMP!', k: [7,8,9] },
+      { q: 'Jelaskan perbedaan teks berita dan teks fiksi, berikan contoh!', k: [7,8,9] },
+      { q: 'Tuliskan pantun nasihat dengan tema belajar!', k: [7,8,9] },
+      { q: 'Jelaskan struktur teks eksposisi beserta contohnya!', k: [7,8,9] },
+      { q: 'Buat ringkasan singkat (3-5 kalimat) dari buku yang pernah kamu baca!', k: [7,8,9] },
+      { q: 'Jelaskan perbedaan hikayat dan cerpen!', k: [10,11,12] },
+      { q: 'Buat teks negosiasi singkat (5-7 kalimat) tentang jual beli!', k: [10,11,12] },
+      { q: 'Jelaskan struktur teks editorial dan tujuan penulisannya!', k: [10,11,12] },
+      { q: 'Tuliskan resensi singkat novel/film yang pernah kamu nikmati!', k: [10,11,12] },
+      { q: 'Buat paragraf opini tentang pentingnya literasi digital!', k: [10,11,12] }
+    ]
+  },
+
+  'Bahasa Inggris': {
+    mcq: [
+      { q: 'Sapaan pagi hari adalah...', o: ['Good night','Good morning','Good evening','Good afternoon'], c: 1, k: [7,8,9] },
+      { q: 'Balasan "Thank you" adalah...', o: ['Sorry',"You're welcome",'Good bye','Please'], c: 1, k: [7,8,9] },
+      { q: 'Simple present: She ___ to school every day.', o: ['go','goes','going','gone'], c: 1, k: [7,8,9] },
+      { q: 'Past tense: I ___ to the market yesterday.', o: ['go','goes','went','gone'], c: 2, k: [7,8,9] },
+      { q: 'Plural dari "child" adalah...', o: ['childs','childes','children','childrens'], c: 2, k: [7,8,9] },
+      { q: 'Synonym "happy" adalah...', o: ['sad','angry','glad','tired'], c: 2, k: [7,8,9] },
+      { q: 'Antonym "big" adalah...', o: ['large','huge','small','tall'], c: 2, k: [7,8,9] },
+      { q: '"Beautiful" berarti...', o: ['Cantik/indah','Buruk','Kuat','Pintar'], c: 0, k: [7,8,9] },
+      { q: 'Preposisi tepat: The book is ___ the table.', o: ['in','on','at','to'], c: 1, k: [7,8,9] },
+      { q: '"Library" berarti...', o: ['Laboratorium','Perpustakaan','Kantin','Kelas'], c: 1, k: [7,8,9] },
+      { q: 'Passive: "They built the bridge in 1990" →', o: ['The bridge is built in 1990','The bridge was built in 1990','The bridge has been built in 1990','The bridge built in 1990'], c: 1, k: [10,11,12] },
+      { q: 'Conditional type 2: If I ___ rich, I would travel.', o: ['am','was','were','be'], c: 2, k: [10,11,12] },
+      { q: 'Reported: "I am tired" (she said) →', o: ['She said she is tired','She said she was tired','She says she was tired','She said I am tired'], c: 1, k: [10,11,12] },
+      { q: 'Gerund digunakan pada...', o: ['I enjoy swimming','I swim yesterday','I will swim','I am swim'], c: 0, k: [10,11,12] },
+      { q: 'Narrative text struktur...', o: ['Orientation-complication-resolution','Thesis-argument-reiteration','Goal-material-steps','Newsworthy-background-source'], c: 0, k: [10,11,12] },
+      { q: 'Purpose analytical exposition adalah...', o: ['To entertain','To persuade by arguments','To describe','To retell past events'], c: 1, k: [10,11,12] },
+      { q: '"Nevertheless" berarti...', o: ['Oleh karena itu','Meskipun demikian','Selain itu','Sebaliknya'], c: 1, k: [10,11,12] },
+      { q: 'Application letter adalah surat...', o: ['Lamaran kerja','Cinta','Izin','Undangan'], c: 0, k: [10,11,12] },
+      { q: 'Comparative dari "good" adalah...', o: ['gooder','more good','better','best'], c: 2, k: [10,11,12] },
+      { q: '"To whom it may concern" pada...', o: ['Surat pribadi','Surat resmi','Iklan','Berita'], c: 1, k: [10,11,12] }
+    ],
+    essay: [
+      { q: 'Write a short paragraph (5-7 sentences) about your daily routine!', k: [7,8,9] },
+      { q: 'Describe your family in English!', k: [7,8,9] },
+      { q: 'Write about your favorite subject!', k: [7,8,9] },
+      { q: 'Make a short dialog about planning a holiday!', k: [7,8,9] },
+      { q: 'Write a short letter about your last holiday!', k: [7,8,9] },
+      { q: 'Write analytical exposition about education importance!', k: [10,11,12] },
+      { q: 'Create an application letter for a part-time job!', k: [10,11,12] },
+      { q: 'Write a narrative text about memorable experience!', k: [10,11,12] },
+      { q: 'Explain difference between formal and informal letters!', k: [10,11,12] },
+      { q: 'Write a short news item about event in your school!', k: [10,11,12] }
+    ]
+  }
+  ,'Ilmu Pengetahuan Alam (IPA)': {
+  mcq: [
+    { q: 'Satuan SI panjang adalah...', o: ['Meter','Kilogram','Sekon','Ampere'], c: 0, k: [7] },
+    { q: 'Perubahan padat langsung jadi gas disebut...', o: ['Menguap','Menyublim','Mengembun','Membeku'], c: 1, k: [7] },
+    { q: 'Bagian mikroskop memperbesar objek...', o: ['Lensa objektif dan okuler','Meja preparat','Cermin','Lengan'], c: 0, k: [7] },
+    { q: 'Organ pernapasan utama manusia...', o: ['Jantung','Paru-paru','Hati','Ginjal'], c: 1, k: [7] },
+    { q: 'Suhu diukur dengan...', o: ['Barometer','Termometer','Higrometer','Anemometer'], c: 1, k: [7] },
+    { q: 'Zat dari atom sejenis disebut...', o: ['Senyawa','Campuran','Unsur','Larutan'], c: 2, k: [7] },
+    { q: 'Alat pengukur massa adalah...', o: ['Neraca','Termometer','Barometer','Amperemeter'], c: 0, k: [7] },
+    { q: 'Hukum Newton I disebut juga hukum...', o: ['Aksi-reaksi','Kelembaman','Gravitasi','Kekekalan energi'], c: 1, k: [8] },
+    { q: 'Pusat pengendali sel adalah...', o: ['Membran sel','Sitoplasma','Nukleus','Ribosom'], c: 2, k: [8] },
+    { q: 'Gaya penyebab benda jatuh...', o: ['Magnet','Gravitasi','Listrik','Gesek'], c: 1, k: [8] },
+    { q: 'Penguapan air dari daun disebut...', o: ['Respirasi','Transpirasi','Fotosintesis','Gutasi'], c: 1, k: [8] },
+    { q: 'Usaha diukur dengan satuan...', o: ['Newton','Joule','Watt','Pascal'], c: 1, k: [8] },
+    { q: 'Organel penghasil energi adalah...', o: ['Ribosom','Mitokondria','Nukleus','Vakuola'], c: 1, k: [8] },
+    { q: 'Tekanan diukur dengan satuan...', o: ['Newton','Pascal','Joule','Watt'], c: 1, k: [8] },
+    { q: 'Planet terdekat Matahari...', o: ['Venus','Bumi','Merkurius','Mars'], c: 2, k: [9] },
+    { q: 'Pembelahan 2 sel identik disebut...', o: ['Meiosis','Mitosis','Fertilisasi','Fragmentasi'], c: 1, k: [9] },
+    { q: 'Rumus kimia air...', o: ['CO2','H2O','O2','NaCl'], c: 1, k: [9] },
+    { q: 'Organel sintesis protein...', o: ['Ribosom','Lisosom','Vakuola','Sentriol'], c: 0, k: [9] },
+    { q: 'Fotosintesis menghasilkan gas...', o: ['CO2','O2','N2','H2'], c: 1, k: [9] },
+    { q: 'Penghantar listrik baik disebut...', o: ['Isolator','Konduktor','Semikonduktor','Superkonduktor'], c: 1, k: [9] },
+    { q: 'Kemagnetan tertinggi ada di...', o: ['Ujung kutub','Tengah','Permukaan','Semua sama'], c: 0, k: [9] },
+    { q: 'Hewan bertelur disebut...', o: ['Vivipar','Ovipar','Ovovivipar','Mamalia'], c: 1, k: [9] }
+  ],
+  essay: [
+    { q: 'Sebutkan 3 perubahan wujud zat beserta contohnya!', k: [7] },
+    { q: 'Jelaskan bagian-bagian mikroskop dan fungsinya!', k: [7] },
+    { q: 'Sebutkan organ sistem pernapasan manusia berurutan!', k: [7] },
+    { q: 'Jelaskan proses fotosintesis pada tumbuhan!', k: [8] },
+    { q: 'Sebutkan 3 hukum Newton beserta contohnya!', k: [8] },
+    { q: 'Jelaskan perbedaan sel hewan dan sel tumbuhan!', k: [8] },
+    { q: 'Jelaskan peredaran darah besar dan kecil!', k: [9] },
+    { q: 'Sebutkan 5 organ pencernaan manusia beserta fungsinya!', k: [9] },
+    { q: 'Jelaskan perbedaan mitosis dan meiosis!', k: [9] },
+    { q: 'Jelaskan cara kerja rangkaian listrik seri dan paralel!', k: [9] }
+  ]
+},
+
+'Ilmu Pengetahuan Sosial (IPS)': {
+  mcq: [
+    { q: 'Letak astronomis Indonesia...', o: ['6°LU–11°LS dan 95°BT–141°BT','6°LS–11°LU dan 95°BB–141°BB','6°LU–11°LS dan 95°BB–141°BB','6°LU–11°LU dan 95°BT–141°BT'], c: 0, k: [7] },
+    { q: 'Ibu kota Jepang...', o: ['Osaka','Kyoto','Tokyo','Nagoya'], c: 2, k: [7] },
+    { q: 'ASEAN didirikan tanggal...', o: ['17 Agustus 1945','8 Agustus 1967','28 Oktober 1928','1 Juni 1945'], c: 1, k: [7] },
+    { q: 'Negara ASEAN tidak pernah dijajah Eropa...', o: ['Indonesia','Malaysia','Thailand','Filipina'], c: 2, k: [7] },
+    { q: 'Selat pemisah Jawa-Sumatera...', o: ['Selat Malaka','Selat Sunda','Selat Bali','Selat Lombok'], c: 1, k: [7] },
+    { q: 'Kerja sama negara Asia Tenggara...', o: ['PBB','ASEAN','APEC','OPEC'], c: 1, k: [7] },
+    { q: 'Pulau terbesar Indonesia...', o: ['Jawa','Kalimantan','Sumatera','Papua'], c: 1, k: [7] },
+    { q: 'Manusia purba Trinil adalah...', o: ['Homo Sapiens','Pithecanthropus Erectus','Homo Wajakensis','Meganthropus'], c: 1, k: [8] },
+    { q: 'Kerajaan Hindu tertua Indonesia...', o: ['Majapahit','Sriwijaya','Kutai','Mataram'], c: 2, k: [8] },
+    { q: 'Proklamasi Kemerdekaan pada...', o: ['17 Agustus 1945','18 Agustus 1945','1 Juni 1945','28 Oktober 1928'], c: 0, k: [8] },
+    { q: 'Sumpah Pemuda pada...', o: ['17 Agustus 1945','28 Oktober 1928','20 Mei 1908','10 November 1945'], c: 1, k: [8] },
+    { q: 'VOC didirikan tahun...', o: ['1596','1602','1619','1799'], c: 1, k: [8] },
+    { q: 'Candi Borobudur dibangun pada Dinasti...', o: ['Sanjaya','Syailendra','Isyana','Gunapriya'], c: 1, k: [8] },
+    { q: 'Benua terbesar...', o: ['Afrika','Asia','Amerika','Eropa'], c: 1, k: [9] },
+    { q: 'Negara "Negeri Sakura" adalah...', o: ['Korea','Jepang','Cina','Thailand'], c: 1, k: [9] },
+    { q: 'PD II berakhir tahun...', o: ['1943','1944','1945','1946'], c: 2, k: [9] },
+    { q: 'PBB didirikan tahun...', o: ['1943','1944','1945','1946'], c: 2, k: [9] },
+    { q: 'Presiden pertama RI...', o: ['Soeharto','Ir. Soekarno','BJ Habibie','Mohammad Hatta'], c: 1, k: [9] },
+    { q: 'Gerakan Non-Blok didirikan tahun...', o: ['1955','1961','1965','1970'], c: 1, k: [9] }
+  ],
+  essay: [
+    { q: 'Jelaskan pengaruh letak geografis Indonesia terhadap ekonomi!', k: [7] },
+    { q: 'Sebutkan 5 negara pendiri ASEAN beserta perwakilannya!', k: [7] },
+    { q: 'Sebutkan 3 faktor persebaran penduduk Indonesia!', k: [7] },
+    { q: 'Jelaskan latar belakang terjadinya Sumpah Pemuda!', k: [8] },
+    { q: 'Jelaskan peran VOC dalam sejarah Indonesia!', k: [8] },
+    { q: 'Sebutkan 3 hasil sidang PPKI 18 Agustus 1945!', k: [8] },
+    { q: 'Jelaskan dampak Perang Dunia II bagi Indonesia!', k: [9] },
+    { q: 'Jelaskan peran Indonesia dalam ASEAN!', k: [9] },
+    { q: 'Sebutkan 3 manfaat kerja sama internasional bagi Indonesia!', k: [9] },
+    { q: 'Jelaskan pengertian globalisasi dan dampaknya!', k: [9] }
+  ]
+},
+
+'Pendidikan Pancasila': {
+  mcq: [
+    { q: 'Pancasila disahkan sebagai dasar negara pada...', o: ['1 Juni 1945','17 Agustus 1945','18 Agustus 1945','1 Oktober 1965'], c: 2, k: [7,8,9] },
+    { q: 'Bunyi sila pertama...', o: ['Ketuhanan Yang Maha Esa','Kemanusiaan adil beradab','Persatuan Indonesia','Keadilan sosial'], c: 0, k: [7,8,9] },
+    { q: 'UUD 1945 disahkan...', o: ['17 Agustus 1945','18 Agustus 1945','1 Juni 1945','1 Oktober 1965'], c: 1, k: [7,8,9] },
+    { q: 'Semboyan "Bhinneka Tunggal Ika" artinya...', o: ['Bersatu kita kuat','Berbeda-beda tetapi tetap satu','Bersatu kita teguh','Satu untuk semua'], c: 1, k: [7,8,9] },
+    { q: 'Nilai Pancasila tercermin dalam...', o: ['Egois','Gotong royong','Individualis','Diskriminatif'], c: 1, k: [7,8,9] },
+    { q: 'Bunyi sila ketiga...', o: ['Persatuan Indonesia','Ketuhanan YME','Kemanusiaan adil','Keadilan sosial'], c: 0, k: [7,8,9] },
+    { q: 'Musyawarah untuk mufakat mencerminkan sila ke...', o: ['1','2','3','4'], c: 3, k: [7,8,9] },
+    { q: 'HAM di Indonesia dijamin dalam...', o: ['UUD 1945 Pasal 28','UU No. 1/1946','Tap MPR No. 1/2000','Keppres'], c: 0, k: [7,8,9] },
+    { q: 'Sila kedua Pancasila...', o: ['Ketuhanan YME','Kemanusiaan yang adil dan beradab','Persatuan Indonesia','Keadilan sosial'], c: 1, k: [7,8,9] },
+    { q: 'Lambang negara Indonesia...', o: ['Garuda Pancasila','Merah Putih','Bhinneka Tunggal Ika','Melati'], c: 0, k: [7,8,9] },
+    { q: 'Sila kelima Pancasila...', o: ['Ketuhanan YME','Persatuan Indonesia','Keadilan sosial bagi seluruh rakyat Indonesia','Kemanusiaan adil'], c: 2, k: [7,8,9] },
+    { q: 'Jumlah sila Pancasila...', o: ['3','4','5','6'], c: 2, k: [7,8,9] },
+    { q: 'BPUPKI diketuai...', o: ['Ir. Soekarno','Dr. Radjiman Wedyodiningrat','Mr. Mohammad Yamin','Ki Hajar Dewantara'], c: 1, k: [7,8,9] },
+    { q: 'PPKI diketuai...', o: ['Mohammad Hatta','Ir. Soekarno','Soepomo','Ahmad Soebardjo'], c: 1, k: [7,8,9] },
+    { q: 'Fungsi Pancasila ideologi terbuka...', o: ['Tertutup dari luar','Nilai dapat dikembangkan sesuai zaman','Tidak berubah','Hanya untuk pejabat'], c: 1, k: [10,11,12] },
+    { q: 'Lembaga yang menguji UU terhadap UUD...', o: ['DPR','Mahkamah Konstitusi','Mahkamah Agung','Presiden'], c: 1, k: [10,11,12] },
+    { q: 'Sistem pemerintahan Indonesia...', o: ['Presidensial','Parlementer','Liberal','Monarki'], c: 0, k: [10,11,12] },
+    { q: 'Hak DPR mengajukan RUU disebut...', o: ['Interpelasi','Inisiatif','Angket','Menyatakan pendapat'], c: 1, k: [10,11,12] },
+    { q: 'Wawasan Nusantara bertujuan...', o: ['Persatuan dan kesatuan bangsa','Kekayaan pribadi','Dominasi suku','Kemerdekaan individu'], c: 0, k: [10,11,12] },
+    { q: 'Ketahanan nasional meliputi...', o: ['Hanya militer','Hanya ekonomi','Ideologi, politik, ekonomi, sosial, budaya, hankam','Hanya budaya'], c: 2, k: [10,11,12] }
+  ],
+  essay: [
+    { q: 'Jelaskan makna sila ke-3 Pancasila dalam kehidupan!', k: [7,8,9] },
+    { q: 'Sebutkan 3 contoh pengamalan Pancasila di sekolah!', k: [7,8,9] },
+    { q: 'Jelaskan sejarah perumusan Pancasila!', k: [7,8,9] },
+    { q: 'Mengapa Pancasila disebut dasar negara?', k: [7,8,9] },
+    { q: 'Jelaskan perbedaan hak dan kewajiban warga negara!', k: [7,8,9] },
+    { q: 'Jelaskan makna Pancasila sebagai ideologi terbuka!', k: [10,11,12] },
+    { q: 'Jelaskan tugas dan wewenang Mahkamah Konstitusi!', k: [10,11,12] },
+    { q: 'Jelaskan pentingnya wawasan nusantara bagi NKRI!', k: [10,11,12] },
+    { q: 'Sebutkan dan jelaskan 5 aspek ketahanan nasional!', k: [10,11,12] },
+    { q: 'Jelaskan peran Indonesia dalam perdamaian dunia!', k: [10,11,12] }
+  ]
+    }
+  ,'Pendidikan Agama & Budi Pekerti': {
+  mcq: [
+    { q: 'Rukun Islam ada...', o: ['3','4','5','6'], c: 2, k: [7,8,9] },
+    { q: 'Kitab suci umat Islam...', o: ['Injil','Taurat','Zabur',"Al-Qur'an"], c: 3, k: [7,8,9] },
+    { q: 'Nabi terakhir umat Islam...', o: ['Nabi Isa','Nabi Musa','Nabi Muhammad SAW','Nabi Ibrahim'], c: 2, k: [7,8,9] },
+    { q: 'Jumlah rakaat shalat Subuh...', o: ['2','3','4','5'], c: 0, k: [7,8,9] },
+    { q: 'Zakat fitrah dibayarkan bulan...', o: ['Syawal','Ramadhan','Muharram','Rajab'], c: 1, k: [7,8,9] },
+    { q: 'Malaikat penyampai wahyu...', o: ['Mikail','Israfil','Jibril','Izrail'], c: 2, k: [7,8,9] },
+    { q: 'Surah Al-Fatihah terdiri...', o: ['5 ayat','6 ayat','7 ayat','8 ayat'], c: 2, k: [7,8,9] },
+    { q: 'Rukun iman ada...', o: ['4','5','6','7'], c: 2, k: [7,8,9] },
+    { q: 'Perilaku jujur termasuk akhlak...', o: ['Madzmumah','Mahmudah','Sayyiah','Tercela'], c: 1, k: [7,8,9] },
+    { q: 'Shalat wajib sehari...', o: ['3','4','5','6'], c: 2, k: [7,8,9] },
+    { q: 'Nabi penerima kitab Injil...', o: ['Nabi Musa','Nabi Daud','Nabi Isa','Nabi Muhammad'], c: 2, k: [7,8,9] },
+    { q: 'Rukun Islam kelima...', o: ['Syahadat','Shalat','Zakat','Haji'], c: 3, k: [7,8,9] },
+    { q: 'Shalat 4 rakaat adalah...', o: ['Subuh','Maghrib','Isya','Dzuhur'], c: 3, k: [7,8,9] },
+    { q: 'Hari raya setelah Ramadhan...', o: ['Idul Adha','Idul Fitri','Maulid','Isra Miraj'], c: 1, k: [7,8,9] },
+    { q: 'Jumlah juz Al-Qur\'an...', o: ['20','30','40','50'], c: 1, k: [7,8,9] },
+    { q: 'Nabi yang membangun kapal besar...', o: ['Nabi Ibrahim','Nabi Nuh','Nabi Musa','Nabi Isa'], c: 1, k: [7,8,9] },
+    { q: 'Puasa wajib pada bulan...', o: ['Syawal','Ramadhan','Muharram','Rajab'], c: 1, k: [7,8,9] },
+    { q: 'Malaikat pencatat amal baik...', o: ['Raqib','Atid','Jibril','Mikail'], c: 0, k: [7,8,9] },
+    { q: 'Rukun shalat pertama...', o: ['Takbiratul ihram','Al-Fatihah','Rukuk','Sujud'], c: 0, k: [7,8,9] },
+    { q: 'Berbakti kepada orang tua disebut...', o: ['Birrul walidain','Husnuzan','Tawadhu','Qanaah'], c: 0, k: [7,8,9] },
+    { q: 'Hukum menuntut ilmu bagi muslim...', o: ['Sunnah','Mubah','Wajib','Makruh'], c: 2, k: [10,11,12] },
+    { q: 'Zakat mal dikeluarkan...', o: ['2,5% dari harta','5%','10%','20%'], c: 0, k: [10,11,12] },
+    { q: 'Haji tanpa umrah disebut...', o: ['Haji ifrad','Haji tamattu','Haji qiran','Haji wada'], c: 0, k: [10,11,12] },
+    { q: 'Sifat wajib Allah Maha Kuasa...', o: ['Qudrat','Iradat','Ilmu','Hayat'], c: 0, k: [10,11,12] },
+    { q: 'Akhlak terpuji dalam bermasyarakat...', o: ['Husnuzan','Su\'uzan','Tawadhu','Amanah'], c: 0, k: [10,11,12] },
+    { q: 'Zakat fitrah sebesar...', o: ['2,5 kg beras','3,5 liter beras','1 sha/2,5 kg makanan pokok','5 kg beras'], c: 2, k: [10,11,12] },
+    { q: 'Puasa sunnah pada hari...', o: ['Senin-Kamis','Minggu','Jumat saja','Sabtu'], c: 0, k: [10,11,12] },
+    { q: 'Perilaku menghindari dosa disebut...', o: ['Taqwa','Tawadhu','Qanaah','Husnuzan'], c: 0, k: [10,11,12] },
+    { q: 'Surah yang wajib di setiap rakaat...', o: ['Al-Fatihah','Al-Ikhlas','An-Nas','Al-Kautsar'], c: 0, k: [10,11,12] },
+    { q: 'Ayat Al-Qur\'an berpikir kritis...', o: ['Al-Baqarah: 164','Al-Fatihah: 1','An-Nas: 1','Al-Ikhlas: 1'], c: 0, k: [10,11,12] }
+  ],
+  essay: [
+    { q: 'Sebutkan 5 rukun Islam dan jelaskan maknanya!', k: [7,8,9] },
+    { q: 'Jelaskan pentingnya jujur bagi pelajar!', k: [7,8,9] },
+    { q: 'Tuliskan 5 contoh perilaku terpuji!', k: [7,8,9] },
+    { q: 'Jelaskan hikmah puasa Ramadhan!', k: [7,8,9] },
+    { q: 'Bagaimana cara berbakti kepada orang tua?', k: [7,8,9] },
+    { q: 'Jelaskan pengertian zakat mal beserta syaratnya!', k: [10,11,12] },
+    { q: 'Jelaskan perbedaan haji dan umrah!', k: [10,11,12] },
+    { q: 'Jelaskan hikmah menuntut ilmu bagi umat Islam!', k: [10,11,12] },
+    { q: 'Bagaimana menerapkan sikap husnuzan?', k: [10,11,12] },
+    { q: 'Jelaskan peran Al-Qur\'an sebagai pedoman hidup!', k: [10,11,12] }
+  ]
+},
+
+'Informatika': {
+  mcq: [
+    { q: 'CPU singkatan dari...', o: ['Central Program Unit','Central Processing Unit','Computer Personal Unit','Control Processing Utility'], c: 1, k: [7,8,9] },
+    { q: 'Perangkat input adalah...', o: ['Monitor','Printer','Keyboard','Speaker'], c: 2, k: [7,8,9] },
+    { q: '1 Byte = ... bit', o: ['4','8','16','32'], c: 1, k: [7,8,9] },
+    { q: 'Contoh sistem operasi...', o: ['Microsoft Word','Windows','Photoshop','Chrome'], c: 1, k: [7,8,9] },
+    { q: 'WWW singkatan dari...', o: ['World Wide Web','Web Wide World','Wide World Web','World Web Wide'], c: 0, k: [7,8,9] },
+    { q: 'HTML singkatan dari...', o: ['HyperText Markup Language','HighText Machine Language','HyperTool Multi Language','Home Tool Markup Language'], c: 0, k: [7,8,9] },
+    { q: 'Biner 1010 = desimal...', o: ['8','10','12','14'], c: 1, k: [7,8,9] },
+    { q: 'Algoritma adalah...', o: ['Bahasa pemrograman','Langkah-langkah logis','Nama software','Jenis hardware'], c: 1, k: [7,8,9] },
+    { q: 'URL singkatan dari...', o: ['Uniform Resource Locator','Universal Reading Link','United Reference Line','User Random Location'], c: 0, k: [7,8,9] },
+    { q: 'Python termasuk bahasa...', o: ['Low-level','High-level','Assembly','Machine'], c: 1, k: [10,11,12] },
+    { q: 'Struktur data LIFO adalah...', o: ['Queue','Stack','Array','Tree'], c: 1, k: [10,11,12] },
+    { q: 'Struktur data FIFO adalah...', o: ['Stack','Queue','Graph','Heap'], c: 1, k: [10,11,12] },
+    { q: 'Perulangan minimal sekali dieksekusi...', o: ['for','while','do-while','foreach'], c: 2, k: [10,11,12] },
+    { q: 'Alamat IP versi 4 panjang...', o: ['16 bit','32 bit','64 bit','128 bit'], c: 1, k: [10,11,12] },
+    { q: 'Protokol kirim email...', o: ['HTTP','SMTP','FTP','SSH'], c: 1, k: [10,11,12] },
+    { q: 'Tag HTML untuk link...', o: ['<a>','<link>','<p>','<div>'], c: 0, k: [10,11,12] },
+    { q: 'Kompleksitas binary search...', o: ['O(n)','O(n²)','O(log n)','O(1)'], c: 2, k: [10,11,12] }
+  ],
+  essay: [
+    { q: 'Jelaskan perbedaan perangkat input, proses, output!', k: [7,8,9] },
+    { q: 'Jelaskan apa itu algoritma!', k: [7,8,9] },
+    { q: 'Sebutkan 5 aplikasi perkantoran beserta fungsinya!', k: [7,8,9] },
+    { q: 'Jelaskan cara menjaga keamanan data saat internet!', k: [7,8,9] },
+    { q: 'Apa itu jaringan komputer? Sebutkan 3 jenisnya!', k: [7,8,9] },
+    { q: 'Jelaskan perbedaan stack dan queue!', k: [10,11,12] },
+    { q: 'Jelaskan konsep OOP!', k: [10,11,12] },
+    { q: 'Jelaskan perbedaan HTTP dan HTTPS!', k: [10,11,12] },
+    { q: 'Buat algoritma (pseudocode) untuk rata-rata 5 bilangan!', k: [10,11,12] },
+    { q: 'Jelaskan dampak positif dan negatif AI!', k: [10,11,12] }
+  ]
+},
+
+'Prakarya (Budidaya/Kerajinan/Rekayasa/Pengolahan)': {
+  mcq: [
+    { q: 'Bahan alami untuk kerajinan anyaman...', o: ['Plastik','Bambu','Kaca','Logam'], c: 1, k: [7,8,9] },
+    { q: 'Teknik dasar kerajinan tekstil...', o: ['Menjahit','Mengelas','Memahat','Mencor'], c: 0, k: [7,8,9] },
+    { q: 'Budidaya tanaman hias menggunakan...', o: ['Air','Tanah/pot','Kayu','Logam'], c: 1, k: [7,8,9] },
+    { q: 'Alat ukur arus listrik...', o: ['Voltmeter','Amperemeter','Ohmmeter','Wattmeter'], c: 1, k: [7,8,9] },
+    { q: 'Limbah organik berasal dari...', o: ['Plastik','Sisa tumbuhan/hewan','Kaca','Logam'], c: 1, k: [7,8,9] },
+    { q: 'Pengawetan suhu rendah disebut...', o: ['Pengeringan','Pendinginan','Pengasapan','Pengalengan'], c: 1, k: [7,8,9] },
+    { q: 'Kemasan makanan berfungsi untuk...', o: ['Melindungi dan menarik konsumen','Memperberat','Membuat mahal','Menyulitkan'], c: 0, k: [7,8,9] },
+    { q: 'Alat membuat karya dari kayu...', o: ['Palu, gergaji, pahat','Panci','Setrika','Cangkul'], c: 0, k: [7,8,9] },
+    { q: 'Kewirausahaan bertujuan...', o: ['Menciptakan lapangan kerja & nilai tambah','Menghabiskan uang','Meniru produk','Berhenti bekerja'], c: 0, k: [10,11,12] },
+    { q: 'BEP adalah titik...', o: ['Keuntungan maksimal','Kerugian maksimal','Pendapatan = biaya','Produksi berhenti'], c: 2, k: [10,11,12] },
+    { q: 'Strategi pemasaran 4P...', o: ['Product, Price, Place, Promotion','People, Process, Product, Price','Plan, Product, Price, Profit','Profit, Promotion, People, Process'], c: 0, k: [10,11,12] },
+    { q: 'SWOT analysis untuk...', o: ['Menghitung laba','Menganalisis kekuatan, kelemahan, peluang, ancaman','Membuat iklan','Memilih supplier'], c: 1, k: [10,11,12] }
+  ],
+  essay: [
+    { q: 'Jelaskan langkah membuat kerajinan dari bahan alam!', k: [7,8,9] },
+    { q: 'Sebutkan 3 teknik budidaya tanaman hias!', k: [7,8,9] },
+    { q: 'Jelaskan cara mengolah limbah organik!', k: [7,8,9] },
+    { q: 'Sebutkan 5 jenis kemasan makanan beserta fungsinya!', k: [7,8,9] },
+    { q: 'Jelaskan teknik dasar pengawetan makanan!', k: [7,8,9] },
+    { q: 'Jelaskan konsep kewirausahaan dan manfaatnya!', k: [10,11,12] },
+    { q: 'Jelaskan cara menghitung BEP sederhana!', k: [10,11,12] },
+    { q: 'Jelaskan strategi pemasaran 4P dengan contoh!', k: [10,11,12] },
+    { q: 'Buat analisis SWOT untuk usaha kecil!', k: [10,11,12] },
+    { q: 'Jelaskan peran wirausaha muda dalam perekonomian!', k: [10,11,12] }
+  ]
+      }
+  ,'Fisika': {
+  mcq: [
+    { q: 'Satuan SI gaya...', o: ['Joule','Newton','Watt','Pascal'], c: 1, k: [10,11,12] },
+    { q: 'Rumus kecepatan rata-rata...', o: ['v = s × t','v = s / t','v = t / s','v = s + t'], c: 1, k: [10,11,12] },
+    { q: 'Hukum Ohm...', o: ['V = I × R','V = I / R','V = R / I','V = I + R'], c: 0, k: [10,11,12] },
+    { q: 'Energi kinetik...', o: ['Ek = mgh','Ek = ½mv²','Ek = Fs','Ek = mc²'], c: 1, k: [10,11,12] },
+    { q: 'Lensa cembung bersifat...', o: ['Menyebarkan cahaya','Mengumpulkan cahaya','Memantulkan','Menyerap'], c: 1, k: [10,11,12] },
+    { q: 'Satuan SI usaha...', o: ['Newton','Joule','Watt','Pascal'], c: 1, k: [10,11,12] },
+    { q: 'Massa jenis air...', o: ['1 g/cm³','10 g/cm³','0,1 g/cm³','100 g/cm³'], c: 0, k: [10,11,12] },
+    { q: 'Frekuensi bunyi diukur dengan...', o: ['Desibel','Hertz','Watt','Newton'], c: 1, k: [10,11,12] },
+    { q: 'Momentum...', o: ['p = m × v','p = m / v','p = v / m','p = m + v'], c: 0, k: [10,11,12] },
+    { q: 'Hukum kekekalan energi menyatakan...', o: ['Energi dapat diciptakan','Energi dapat dimusnahkan','Energi tidak dapat diciptakan/dimusnahkan','Energi selalu hilang'], c: 2, k: [10,11,12] }
+  ],
+  essay: [
+    { q: 'Jelaskan bunyi ketiga hukum Newton beserta contoh!', k: [10,11,12] },
+    { q: 'Mobil 20 m/s selama 5 detik. Hitung jarak!', k: [10,11,12] },
+    { q: 'Jelaskan perbedaan besaran pokok dan turunan!', k: [10,11,12] },
+    { q: 'Jelaskan prinsip cermin cekung!', k: [10,11,12] },
+    { q: 'Sebutkan 3 macam energi dan perubahannya!', k: [10,11,12] }
+  ]
+},
+
+'Kimia': {
+  mcq: [
+    { q: 'Rumus kimia air...', o: ['CO2','H2O','O2','NaCl'], c: 1, k: [10,11,12] },
+    { q: 'Nomor atom Oksigen...', o: ['6','7','8','9'], c: 2, k: [10,11,12] },
+    { q: 'Ikatan logam-nonlogam adalah...', o: ['Kovalen','Ion','Hidrogen','Logam'], c: 1, k: [10,11,12] },
+    { q: 'pH netral...', o: ['0','7','14','1'], c: 1, k: [10,11,12] },
+    { q: 'Rumus asam sulfat...', o: ['HCl','HNO3','H2SO4','H2CO3'], c: 2, k: [10,11,12] },
+    { q: 'Lambang Natrium...', o: ['Na','N','Ni','Nr'], c: 0, k: [10,11,12] },
+    { q: 'Zat mempercepat reaksi tanpa ikut bereaksi...', o: ['Inhibitor','Katalis','Reaktan','Produk'], c: 1, k: [10,11,12] },
+    { q: 'Jumlah proton C (Z=6)...', o: ['4','6','8','12'], c: 1, k: [10,11,12] },
+    { q: 'Perubahan kimia ditandai...', o: ['Perubahan wujud','Terbentuk zat baru','Suhu saja','Warna saja'], c: 1, k: [10,11,12] },
+    { q: 'Konfigurasi 2, 8, 7 elektron valensi...', o: ['2','7','8','17'], c: 1, k: [10,11,12] }
+  ],
+  essay: [
+    { q: 'Jelaskan perbedaan perubahan fisika dan kimia!', k: [10,11,12] },
+    { q: 'Sebutkan 3 ciri reaksi kimia beserta contoh!', k: [10,11,12] },
+    { q: 'Jelaskan perbedaan ikatan ion dan kovalen!', k: [10,11,12] },
+    { q: 'Jelaskan asam, basa, garam beserta contoh!', k: [10,11,12] },
+    { q: 'Sebutkan bunyi hukum kekekalan massa!', k: [10,11,12] }
+  ]
+},
+
+'Biologi': {
+  mcq: [
+    { q: 'Organel penghasil ATP...', o: ['Ribosom','Mitokondria','Nukleus','Vakuola'], c: 1, k: [10,11,12] },
+    { q: 'Klorofil terdapat di...', o: ['Mitokondria','Kloroplas','Ribosom','Nukleus'], c: 1, k: [10,11,12] },
+    { q: 'Sel darah merah mengandung...', o: ['Insulin','Hemoglobin','Albumin','Fibrinogen'], c: 1, k: [10,11,12] },
+    { q: 'Hormon insulin dihasilkan...', o: ['Hati','Pankreas','Ginjal','Jantung'], c: 1, k: [10,11,12] },
+    { q: 'Hewan mamalia adalah...', o: ['Ikan','Burung','Paus','Katak'], c: 2, k: [10,11,12] },
+    { q: 'Jumlah kingdom Whittaker...', o: ['3','4','5','6'], c: 2, k: [10,11,12] },
+    { q: 'Penguraian glukosa jadi energi...', o: ['Fotosintesis','Respirasi','Transpirasi','Gutasi'], c: 1, k: [10,11,12] },
+    { q: 'DNA tersusun dari...', o: ['Asam amino','Nukleotida','Glukosa','Protein'], c: 1, k: [10,11,12] },
+    { q: 'Pembelahan sel kelamin...', o: ['Mitosis','Meiosis','Amitosis','Fragmentasi'], c: 1, k: [10,11,12] },
+    { q: 'Hukum Mendel I adalah hukum...', o: ['Asortasi bebas','Segregasi','Pewarisan','Dominansi'], c: 1, k: [10,11,12] }
+  ],
+  essay: [
+    { q: 'Jelaskan perbedaan sel prokariotik dan eukariotik!', k: [10,11,12] },
+    { q: 'Sebutkan dan jelaskan 3 bagian utama sel!', k: [10,11,12] },
+    { q: 'Jelaskan peredaran darah besar dan kecil!', k: [10,11,12] },
+    { q: 'Jelaskan perbedaan mitosis dan meiosis!', k: [10,11,12] },
+    { q: 'Jelaskan sistem klasifikasi 5 kingdom!', k: [10,11,12] }
+  ]
+},
+
+'Sejarah': {
+  mcq: [
+    { q: 'VOC didirikan tahun...', o: ['1596','1602','1619','1799'], c: 1, k: [10] },
+    { q: 'Candi Borobudur dibangun pada...', o: ['Sanjaya','Syailendra','Isyana','Gunapriya'], c: 1, k: [10] },
+    { q: 'Sumpah Palapa diucapkan...', o: ['Hayam Wuruk','Gajah Mada','Raden Wijaya','Ken Arok'], c: 1, k: [10] },
+    { q: 'Kerajaan Hindu tertua...', o: ['Majapahit','Sriwijaya','Kutai','Tarumanegara'], c: 2, k: [10] },
+    { q: 'Perang Diponegoro terjadi...', o: ['1825-1830','1800-1805','1850-1855','1900-1905'], c: 0, k: [11] },
+    { q: 'Budi Utomo didirikan...', o: ['20 Mei 1908','28 Oktober 1928','17 Agustus 1945','1 Juni 1945'], c: 0, k: [11] },
+    { q: 'Rengasdengklok terjadi...', o: ['16 Agustus 1945','17 Agustus 1945','15 Agustus 1945','14 Agustus 1945'], c: 0, k: [11] },
+    { q: 'Agresi Belanda I tahun...', o: ['1945','1947','1948','1949'], c: 1, k: [11] },
+    { q: 'KMB dilaksanakan di...', o: ['Jakarta','Amsterdam','Den Haag','Paris'], c: 2, k: [12] },
+    { q: 'G30S/PKI terjadi tahun...', o: ['1965','1966','1967','1968'], c: 0, k: [12] },
+    { q: 'Orde Baru dipimpin...', o: ['Soekarno','Soeharto','Habibie','Gus Dur'], c: 1, k: [12] },
+    { q: 'Reformasi dimulai tahun...', o: ['1996','1997','1998','1999'], c: 2, k: [12] }
+  ],
+  essay: [
+    { q: 'Jelaskan latar belakang berdirinya VOC!', k: [10] },
+    { q: 'Jelaskan 3 teori masuknya Hindu-Buddha!', k: [10] },
+    { q: 'Sebutkan 3 faktor pergerakan nasional!', k: [11] },
+    { q: 'Jelaskan peran Sumpah Pemuda!', k: [11] },
+    { q: 'Jelaskan strategi perjuangan sebelum dan sesudah 1908!', k: [11] },
+    { q: 'Jelaskan latar belakang Orde Baru!', k: [12] },
+    { q: 'Jelaskan 3 penyebab jatuhnya Orde Baru!', k: [12] },
+    { q: 'Jelaskan peran Indonesia di era globalisasi!', k: [12] },
+    { q: 'Sebutkan 5 tokoh kemerdekaan beserta perannya!', k: [11] },
+    { q: 'Jelaskan dampak reformasi 1998!', k: [12] }
+  ]
+},
+
+'Geografi': {
+  mcq: [
+    { q: 'Garis melintang barat-timur...', o: ['Garis bujur','Garis lintang','Garis ekuator','Garis meridian'], c: 1, k: [10] },
+    { q: 'Gunung tertinggi Indonesia...', o: ['Semeru','Rinjani','Puncak Jaya','Kerinci'], c: 2, k: [10] },
+    { q: 'Danau terbesar Indonesia...', o: ['Toba','Singkarak','Batur','Sentani'], c: 0, k: [10] },
+    { q: 'Iklim Indonesia...', o: ['Subtropis','Tropis','Sedang','Dingin'], c: 1, k: [10] },
+    { q: 'Lapisan tempat cuaca...', o: ['Stratosfer','Troposfer','Mesosfer','Termosfer'], c: 1, k: [10] },
+    { q: 'Alat ukur kecepatan angin...', o: ['Barometer','Anemometer','Higrometer','Seismograf'], c: 1, k: [10] },
+    { q: 'Hujan karena udara naik pegunungan...', o: ['Zenithal','Orografis','Frontal','Siklon'], c: 1, k: [10] },
+    { q: 'Pelapukan batuan karena cuaca...', o: ['Pelapukan kimia','Pelapukan fisika','Pelapukan biologi','Erosi'], c: 1, k: [10] },
+    { q: 'Planet terbesar Tata Surya...', o: ['Bumi','Mars','Jupiter','Saturnus'], c: 2, k: [10] },
+    { q: 'Sabuk asteroid antara...', o: ['Bumi-Mars','Mars-Jupiter','Jupiter-Saturnus','Venus-Bumi'], c: 1, k: [10] }
+  ],
+  essay: [
+    { q: 'Jelaskan pengaruh letak astronomis Indonesia!', k: [10] },
+    { q: 'Sebutkan 3 jenis hujan berdasarkan proses!', k: [10] },
+    { q: 'Jelaskan proses gempa bumi tektonik!', k: [10] },
+    { q: 'Sebutkan dan jelaskan 4 lapisan atmosfer!', k: [10] },
+    { q: 'Jelaskan perbedaan cuaca dan iklim!', k: [10] }
+  ]
+},
+
+'Ekonomi': {
+  mcq: [
+    { q: 'Ilmu mempelajari cara memenuhi kebutuhan...', o: ['Sosiologi','Ekonomi','Geografi','Sejarah'], c: 1, k: [10,11,12] },
+    { q: 'Hukum permintaan...', o: ['Harga naik permintaan naik','Harga naik permintaan turun','Harga turun permintaan turun','Harga tidak berpengaruh'], c: 1, k: [10,11,12] },
+    { q: 'Kenaikan harga umum terus-menerus...', o: ['Deflasi','Inflasi','Devaluasi','Revaluasi'], c: 1, k: [10,11,12] },
+    { q: 'Bank sentral Indonesia...', o: ['BRI','BCA','Bank Indonesia','Mandiri'], c: 2, k: [10,11,12] },
+    { q: 'Biaya tetap adalah...', o: ['Biaya variabel','Biaya tidak berubah','Biaya total','Biaya marginal'], c: 1, k: [10,11,12] },
+    { q: 'Kartu pembayaran nontunai...', o: ['Cek','Giro','Kartu kredit','Wesel'], c: 2, k: [10,11,12] },
+    { q: 'GDP singkatan...', o: ['General Domestic Product','Gross Domestic Product','Great Domestic Price','Gross Demand Price'], c: 1, k: [11,12] },
+    { q: 'Kurva harga-jumlah diminta...', o: ['Kurva penawaran','Kurva permintaan','Kurva produksi','Kurva biaya'], c: 1, k: [11] },
+    { q: 'APBN singkatan...', o: ['Anggaran Pendapatan dan Belanja Negara','Alokasi Penerimaan dan Biaya Nasional','Anggaran Pajak dan Bonus Negara','Aplikasi Pembukuan Neraca'], c: 0, k: [12] },
+    { q: 'Pasar modal diawasi...', o: ['BI','OJK','KPK','BPK'], c: 1, k: [12] }
+  ],
+  essay: [
+    { q: 'Jelaskan perbedaan kebutuhan primer, sekunder, tersier!', k: [10] },
+    { q: 'Sebutkan 3 faktor mempengaruhi permintaan!', k: [10] },
+    { q: 'Jelaskan dampak inflasi terhadap perekonomian!', k: [11] },
+    { q: 'Jelaskan perbedaan ekonomi mikro dan makro!', k: [11] },
+    { q: 'Jelaskan 3 fungsi uang!', k: [10] },
+    { q: 'Jelaskan peran OJK dalam perekonomian!', k: [12] },
+    { q: 'Jelaskan pengertian APBN dan fungsinya!', k: [12] },
+    { q: 'Sebutkan 3 sumber penerimaan negara!', k: [12] },
+    { q: 'Jelaskan peran pasar modal!', k: [12] },
+    { q: 'Jelaskan pengertian pembangunan ekonomi!', k: [12] }
+  ]
+},
+
+'Sosiologi': {
+  mcq: [
+    { q: 'Ilmu mempelajari masyarakat...', o: ['Antropologi','Sosiologi','Psikologi','Ekonomi'], c: 1, k: [10,11,12] },
+    { q: 'Keluarga termasuk kelompok...', o: ['Sekunder','Primer','Formal','Informal'], c: 1, k: [10] },
+    { q: 'Interaksi sosial memerlukan 2 syarat...', o: ['Kontak & komunikasi','Uang & jabatan','Hukum & norma','Status & peran'], c: 0, k: [10] },
+    { q: 'Norma dengan sanksi tegas tertulis...', o: ['Kesopanan','Kesusilaan','Hukum','Agama'], c: 2, k: [10] },
+    { q: 'Proses penyesuaian lingkungan sosial...', o: ['Asimilasi','Akulturasi','Sosialisasi','Difusi'], c: 2, k: [10] },
+    { q: 'Perubahan sosial dapat disebabkan...', o: ['Tradisi','Konservatisme','Inovasi','Isolasi'], c: 2, k: [11] },
+    { q: 'Percampuran budaya tanpa hilang ciri asli...', o: ['Asimilasi','Akulturasi','Difusi','Inovasi'], c: 1, k: [11] },
+    { q: 'Contoh perilaku menyimpang...', o: ['Berbakti orang tua','Mencuri','Gotong royong','Membayar pajak'], c: 1, k: [11] },
+    { q: 'Konflik sosial umumnya karena...', o: ['Kerja sama','Perbedaan kepentingan','Persamaan tujuan','Kesamaan budaya'], c: 1, k: [11] },
+    { q: 'Mobilitas sosial vertikal utama karena...', o: ['Pendidikan','Jenis kelamin','Warna kulit','Tinggi badan'], c: 0, k: [12] }
+  ],
+  essay: [
+    { q: 'Jelaskan pengertian interaksi sosial dan bentuknya!', k: [10] },
+    { q: 'Sebutkan 3 faktor penyebab perubahan sosial!', k: [11] },
+    { q: 'Jelaskan perbedaan akulturasi dan asimilasi!', k: [11] },
+    { q: 'Mengapa norma penting dalam bermasyarakat?', k: [10] },
+    { q: 'Sebutkan 3 contoh masalah sosial!', k: [11] },
+    { q: 'Jelaskan bentuk-bentuk mobilitas sosial!', k: [12] },
+    { q: 'Jelaskan dampak globalisasi terhadap budaya lokal!', k: [12] },
+    { q: 'Jelaskan peran lembaga sosial!', k: [12] }
+  ]
+    }
+    ,'Seni Budaya (Musik/Rupa/Tari/Teater)': {
+    mcq: [
+      { q: 'Alat musik angklung berasal...', o: ['Jawa Tengah','Jawa Barat','Jawa Timur','Banten'], c: 1, k: [7,8,9] },
+      { q: 'Tari Kecak berasal...', o: ['Bali','Jawa','Sumatera','Sulawesi'], c: 0, k: [7,8,9] },
+      { q: 'Lagu "Indonesia Raya" diciptakan...', o: ['WR Supratman','Ismail Marzuki','Kusbini','C. Simanjuntak'], c: 0, k: [7,8,9] },
+      { q: 'Seni rupa 2 dimensi ukurannya...', o: ['Panjang, lebar, tinggi','Panjang & lebar','Hanya panjang','Hanya tinggi'], c: 1, k: [7,8,9] },
+      { q: 'Warna primer adalah...', o: ['Merah, kuning, biru','Hijau, ungu, oranye','Hitam, putih, abu','Coklat, merah, hijau'], c: 0, k: [7,8,9] },
+      { q: 'Tari Saman berasal...', o: ['Aceh','Bali','Jawa Tengah','Papua'], c: 0, k: [7,8,9] },
+      { q: 'Teknik menggambar titik-titik...', o: ['Dussel','Pointilis','Aquarel','Plakat'], c: 1, k: [7,8,9] },
+      { q: 'Karya seni dengan mencetak...', o: ['Lukis','Grafis','Patung','Kriya'], c: 1, k: [7,8,9] },
+      { q: 'Rumah adat Gadang berasal...', o: ['Aceh','Sumatera Barat','Jawa Barat','Papua'], c: 1, k: [7,8,9] },
+      { q: 'Alat musik petik adalah...', o: ['Angklung','Gitar','Gendang','Seruling'], c: 1, k: [7,8,9] },
+      { q: 'Aliran seni lukis bentuk geometris...', o: ['Realisme','Kubisme','Impresionisme','Surealisme'], c: 1, k: [10,11,12] },
+      { q: 'Karya sastra drama disebut...', o: ['Prosa','Puisi','Skenario/naskah','Esai'], c: 2, k: [10,11,12] },
+      { q: 'Musik tradisional gamelan dari...', o: ['Bali/Jawa','Sumatera','Kalimantan','Papua'], c: 0, k: [10,11,12] },
+      { q: 'Unsur dasar dalam tari...', o: ['Wiraga, wirama, wirasa','Bunyi, gerak, warna','Tema, alur, tokoh','Nada, irama, tempo'], c: 0, k: [10,11,12] }
+    ],
+    essay: [
+      { q: 'Jelaskan perbedaan seni rupa 2D dan 3D beserta contoh!', k: [7,8,9] },
+      { q: 'Sebutkan 5 alat musik tradisional Indonesia beserta daerahnya!', k: [7,8,9] },
+      { q: 'Sebutkan 3 teknik dasar menggambar!', k: [7,8,9] },
+      { q: 'Jelaskan perbedaan warna primer, sekunder, tersier!', k: [7,8,9] },
+      { q: 'Jelaskan makna filosofis tari Kecak!', k: [7,8,9] },
+      { q: 'Jelaskan konsep aliran seni lukis modern!', k: [10,11,12] },
+      { q: 'Sebutkan 3 fungsi seni dalam masyarakat!', k: [10,11,12] },
+      { q: 'Jelaskan unsur-unsur pertunjukan teater!', k: [10,11,12] },
+      { q: 'Jelaskan peran seni dalam identitas bangsa!', k: [10,11,12] },
+      { q: 'Buat kritik seni sederhana!', k: [10,11,12] }
+    ]
+  },
+
+  'PJOK': {
+    mcq: [
+      { q: 'Bola voli per tim...', o: ['5','6','7','11'], c: 1, k: [7,8,9] },
+      { q: 'Induk sepak bola Indonesia...', o: ['PBSI','PSSI','PERBASI','PRSI'], c: 1, k: [7,8,9] },
+      { q: 'Lari jarak pendek disebut...', o: ['Maraton','Sprint','Jogging','Estafet'], c: 1, k: [7,8,9] },
+      { q: 'Senam irama diiringi...', o: ['Sorakan','Musik','Tepukan','Suara peluit'], c: 1, k: [7,8,9] },
+      { q: 'Jumlah pemain sepak bola per tim...', o: ['9','10','11','12'], c: 2, k: [7,8,9] },
+      { q: 'Renang gaya menyerupai katak...', o: ['Bebas','Punggung','Dada','Kupu-kupu'], c: 2, k: [7,8,9] },
+      { q: 'Pencak silat dari...', o: ['Jepang','Korea','Indonesia','Thailand'], c: 2, k: [7,8,9] },
+      { q: 'Bulu tangkis menggunakan...', o: ['Pemukul & bola','Raket & shuttlecock','Stik & puck','Bet & bola kecil'], c: 1, k: [7,8,9] },
+      { q: 'Bola basket per tim...', o: ['3','4','5','6'], c: 2, k: [7,8,9] },
+      { q: 'Panjang lapangan bola voli...', o: ['16 m','18 m','20 m','24 m'], c: 1, k: [7,8,9] },
+      { q: 'Prinsip latihan FITT...', o: ['Frequency, Intensity, Time, Type','Fast, Intense, Test, Type','Function, Intention, Term, Test','Form, Intensity, Time, Trial'], c: 0, k: [10,11,12] },
+      { q: 'Program latihan kekuatan otot...', o: ['Repetisi rendah, beban tinggi','Repetisi tinggi, beban rendah','Tanpa beban','Hanya kardio'], c: 0, k: [10,11,12] },
+      { q: 'Induk olahraga dunia...', o: ['PBB','IOC','WHO','IMF'], c: 1, k: [10,11,12] },
+      { q: 'Latihan daya tahan jantung...', o: ['Angkat beban','Push up','Kardio','Sit up'], c: 2, k: [10,11,12] }
+    ],
+    essay: [
+      { q: 'Jelaskan cara passing bawah bola voli!', k: [7,8,9] },
+      { q: 'Sebutkan 3 manfaat olahraga bagi kesehatan!', k: [7,8,9] },
+      { q: 'Jelaskan peraturan dasar sepak bola!', k: [7,8,9] },
+      { q: 'Jelaskan teknik dasar bulu tangkis!', k: [7,8,9] },
+      { q: 'Jelaskan cara pemanasan yang benar!', k: [7,8,9] },
+      { q: 'Jelaskan prinsip FITT dalam latihan!', k: [10,11,12] },
+      { q: 'Jelaskan cara menyusun program latihan mingguan!', k: [10,11,12] },
+      { q: 'Jelaskan perbedaan latihan aerobik dan anaerobik!', k: [10,11,12] },
+      { q: 'Jelaskan pentingnya pola makan sehat bagi atlet!', k: [10,11,12] },
+      { q: 'Jelaskan cara mencegah cedera olahraga!', k: [10,11,12] }
+    ]
+  }
+};
+  const BANK_GENERAL = {
+  mcq: [
+    { q: 'Ibu kota negara Indonesia adalah...', o: ['Bandung','Jakarta','Surabaya','Medan'], c: 1, sub: ['indonesia','geografi'] },
+    { q: 'Presiden pertama RI adalah...', o: ['Soeharto','Ir. Soekarno','BJ Habibie','Mohammad Hatta'], c: 1, sub: ['indonesia','sejarah'] },
+    { q: 'Proklamasi terjadi tanggal...', o: ['1 Juni 1945','17 Agustus 1945','28 Oktober 1928','18 Agustus 1945'], c: 1, sub: ['indonesia','sejarah'] },
+    { q: 'Lagu kebangsaan Indonesia...', o: ['Garuda Pancasila','Indonesia Raya','Bagimu Negeri','Halo-Halo Bandung'], c: 1, sub: ['indonesia','seni'] },
+    { q: 'Warna bendera Indonesia...', o: ['Merah-Putih','Merah-Biru','Putih-Biru','Merah-Kuning'], c: 0, sub: ['indonesia'] },
+    { q: 'Bahasa resmi Indonesia...', o: ['Bahasa Jawa','Bahasa Indonesia','Bahasa Melayu','Bahasa Sunda'], c: 1, sub: ['indonesia'] },
+    { q: 'Mata uang Indonesia...', o: ['Ringgit','Peso','Rupiah','Baht'], c: 2, sub: ['indonesia'] },
+    { q: 'Pulau terbesar Indonesia...', o: ['Jawa','Kalimantan','Sumatera','Papua'], c: 1, sub: ['indonesia','geografi'] },
+    { q: 'Semboyan bangsa Indonesia...', o: ['Bhinneka Tunggal Ika','Garuda Pancasila','Tut Wuri Handayani','Jalesveva Jayamahe'], c: 0, sub: ['indonesia'] },
+    { q: 'Candi Borobudur di provinsi...', o: ['Jawa Timur','Jawa Tengah','DI Yogyakarta','Jawa Barat'], c: 1, sub: ['indonesia','sejarah','geografi'] },
+    { q: 'Danau Toba di provinsi...', o: ['Aceh','Sumatera Utara','Riau','Sumatera Barat'], c: 1, sub: ['indonesia','geografi'] },
+    { q: 'Sumpah Pemuda tanggal...', o: ['17 Agustus 1945','28 Oktober 1928','20 Mei 1908','1 Juni 1945'], c: 1, sub: ['indonesia','sejarah'] },
+    { q: 'ASEAN adalah organisasi kawasan...', o: ['Asia Timur','Asia Tenggara','Asia Selatan','Asia Tengah'], c: 1, sub: ['indonesia','geografi'] },
+    { q: 'PBB singkatan...', o: ['Persatuan Bangsa-Bangsa','Perserikatan Bangsa-Bangsa','Perhimpunan Bangsa Bersatu','Perkumpulan Bangsa Dunia'], c: 1, sub: ['indonesia','sejarah'] },
+    { q: 'Komodo di provinsi...', o: ['Bali','Nusa Tenggara Timur','Nusa Tenggara Barat','Maluku'], c: 1, sub: ['indonesia','geografi'] },
+    { q: 'Alat musik angklung dari...', o: ['Jawa Timur','Jawa Barat','Jawa Tengah','Bali'], c: 1, sub: ['seni'] },
+    { q: 'Tari Kecak dari pulau...', o: ['Jawa','Sumatera','Bali','Kalimantan'], c: 2, sub: ['seni'] },
+    { q: 'Pahlawan wanita Aceh...', o: ['RA Kartini','Cut Nyak Dhien','Dewi Sartika','Martha Christina Tiahahu'], c: 1, sub: ['indonesia','sejarah'] },
+    { q: 'RA Kartini pelopor...', o: ['Kemerdekaan','Emansipasi wanita','Pendidikan teknik','Seni budaya'], c: 1, sub: ['indonesia','sejarah'] },
+    { q: 'Gunung tertinggi Pulau Jawa...', o: ['Semeru','Merapi','Slamet','Sumbing'], c: 0, sub: ['indonesia','geografi'] },
+    { q: 'Selat pemisah Jawa-Sumatera...', o: ['Selat Malaka','Selat Sunda','Selat Bali','Selat Lombok'], c: 1, sub: ['indonesia','geografi'] },
+    { q: 'Hari Kemerdekaan tanggal...', o: ['1 Juni','17 Agustus','28 Oktober','10 November'], c: 1, sub: ['indonesia','sejarah'] },
+    { q: 'Hari Pahlawan tanggal...', o: ['17 Agustus','10 November','28 Oktober','2 Mei'], c: 1, sub: ['indonesia','sejarah'] },
+    { q: 'Mata uang Jepang...', o: ['Won','Yuan','Yen','Ringgit'], c: 2, sub: ['geografi'] },
+    { q: 'Mata uang Malaysia...', o: ['Baht','Ringgit','Peso','Dong'], c: 1, sub: ['geografi'] },
+    { q: 'Mata uang Thailand...', o: ['Baht','Ringgit','Peso','Rupee'], c: 0, sub: ['geografi'] },
+    { q: 'Mata uang Filipina...', o: ['Baht','Ringgit','Peso','Rupee'], c: 2, sub: ['geografi'] },
+    { q: 'Bahasa Indonesia berasal dari...', o: ['Jawa','Melayu','Sunda','Sansekerta'], c: 1, sub: ['indonesia'] },
+    { q: 'Gunung tertinggi Indonesia...', o: ['Semeru','Rinjani','Puncak Jaya','Kerinci'], c: 2, sub: ['indonesia','geografi'] },
+    { q: 'Presiden kedua RI...', o: ['BJ Habibie','Soeharto','Abdurrahman Wahid','Megawati'], c: 1, sub: ['indonesia','sejarah'] },
+    { q: 'Wapres pertama RI...', o: ['Soeharto','Mohammad Hatta','Adam Malik','Sri Sultan HB IX'], c: 1, sub: ['indonesia','sejarah'] },
+    { q: 'Bank sentral Indonesia...', o: ['BRI','Bank Indonesia','BCA','Mandiri'], c: 1, sub: ['indonesia'] },
+    { q: 'Rumah adat Tongkonan dari...', o: ['Sumatera Barat','Sulawesi Selatan','NTT','Papua'], c: 1, sub: ['seni'] },
+    { q: 'Tari Saman dari provinsi...', o: ['Bali','Aceh','Jawa Tengah','Papua'], c: 1, sub: ['seni'] },
+    { q: 'Alat musik Sasando dari...', o: ['NTT','Bali','Jawa Barat','Sumatera Utara'], c: 0, sub: ['seni'] },
+    { q: 'Batik diakui UNESCO tahun...', o: ['2005','2009','2012','2015'], c: 1, sub: ['seni'] },
+    { q: 'Burung Cendrawasih fauna dari...', o: ['Papua','Bali','Kalimantan','Jawa'], c: 0, sub: ['indonesia','geografi'] },
+    { q: 'Hari Pendidikan Nasional...', o: ['1 Juni','2 Mei','17 Agustus','21 April'], c: 1, sub: ['indonesia','sejarah'] },
+    { q: 'Mata uang India...', o: ['Yen','Rupee','Ringgit','Dollar'], c: 1, sub: ['geografi'] },
+    { q: 'Lambang negara Indonesia...', o: ['Garuda Pancasila','Merah Putih','Bhinneka Tunggal Ika','Melati'], c: 0, sub: ['indonesia'] }
+  ],
+  essay: [
+    { q: 'Jelaskan mengapa Pancasila penting sebagai dasar negara!', sub: ['indonesia'] },
+    { q: 'Sebutkan 5 pahlawan nasional beserta perannya!', sub: ['indonesia','sejarah'] },
+    { q: 'Jelaskan makna "Bhinneka Tunggal Ika"!', sub: ['indonesia'] },
+    { q: 'Sebutkan 3 keanekaragaman budaya Indonesia!', sub: ['seni','indonesia'] },
+    { q: 'Mengapa kita harus bangga menjadi bangsa Indonesia?', sub: ['indonesia'] }
+  ]
+};
+
+// ============ SUB MAPEL → SUB COCOK (KETAT) ============
+function subCocok(namaMapel) {
+  const l = namaMapel.toLowerCase();
+  if (l.includes('agama')) return [];
+  if (l.includes('pancasila') || l.includes('ppkn')) return ['indonesia'];
+  if (l.includes('bahasa')) return [];
+  if (l.includes('ips') || l.includes('sejarah') || l.includes('geografi') ||
+      l.includes('sosiologi') || l.includes('ekonomi') || l.includes('antropologi')) {
+    return ['indonesia', 'sejarah', 'geografi'];
+  }
+  if (l.includes('seni')) return ['seni', 'indonesia'];
+  return [];
+}
+
+// ============ SEMESTER OTOMATIS ============
+function getAutoSemester() {
+  const now = new Date();
+  const m = now.getMonth();
+  if (m >= 6 && m <= 9) return 1;
+  return 2;
+}
+function getTahunAjaran(sem) {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth();
+  if (sem === 1) return `${y}/${y + 1}`;
+  if (m >= 10) return `${y}/${y + 1}`;
+  return `${y - 1}/${y}`;
+}
+
+// ============ SESSION SAVE / LOAD ============
+const SESSION_KEY = 'quizzep_session';
+function saveSession() {
+  try {
+    localStorage.setItem(SESSION_KEY, JSON.stringify({
+      kelas: state.kelas, semester: state.semester, mapel: state.mapel,
+      questions: state.questions, currentIndex: state.currentIndex,
+      answers: state.answers, revealed: state.revealed,
+      essayFilled: state.essayFilled, timestamp: Date.now()
+    }));
+  } catch (e) { console.warn('Save session gagal:', e); }
+}
+function loadSession() {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw);
+    if (!data || !data.questions || !data.questions.length) return null;
+    return data;
+  } catch (e) { return null; }
+}
+function clearSession() { try { localStorage.removeItem(SESSION_KEY); } catch (e) {} }
+function applySession(data) {
+  state.kelas = data.kelas;
+  state.semester = data.semester;
+  state.mapel = data.mapel;
+  state.questions = data.questions;
+  state.currentIndex = data.currentIndex || 0;
+  state.answers = data.answers || new Array(data.questions.length).fill(null);
+  state.revealed = data.revealed || new Array(data.questions.length).fill(false);
+  state.essayFilled = data.essayFilled || 0;
+  state.paused = false;
+      }
+  // ============ ONLINE PRESENCE ============
+let onlineUserId = null;
+function initOnlinePresence() {
+  if (!db) { $('onlineChip').style.display = 'none'; return; }
+  try {
+    onlineUserId = (state.user && state.user.uid) ? state.user.uid : ('guest-' + Math.random().toString(36).slice(2, 10));
+    const myRef = ref(db, 'quizzep_online/' + onlineUserId);
+    set(myRef, { ts: serverTimestamp(), name: state.name || 'Anonim' }).catch(() => {});
+    onDisconnect(myRef).remove();
+    const listRef = ref(db, 'quizzep_online');
+    onValue(listRef, (snap) => {
+      const data = snap.val() || {};
+      const now = Date.now();
+      const aktif = Object.values(data).filter(v => v && v.ts && (now - v.ts < 120000));
+      const count = aktif.length || Object.keys(data).length;
+      $('onlineCount').textContent = count;
+      $('onlineChip').style.display = 'flex';
+    }, (err) => {
+      console.warn('RTDB read error:', err);
+      $('onlineChip').style.display = 'none';
+    });
+  } catch (e) {
+    console.warn('Presence gagal:', e);
+    $('onlineChip').style.display = 'none';
+  }
+}
+
+// ============ LOGIN ============
+$('btnLogin').addEventListener('click', async () => {
+  const name = $('inputName').value.trim();
+  $('loginError').textContent = '';
+  if (name.length < 2) { $('loginError').textContent = 'Nama minimal 2 karakter ya!'; return; }
+  $('loginLoading').style.display = 'block';
+  $('btnLogin').disabled = true;
+  try {
+    const cred = await signInAnonymously(auth);
+    state.user = cred.user;
+    state.name = name;
+    localStorage.setItem('quizzep_name', name);
+    $('loginLoading').style.display = 'none';
+    $('btnLogin').disabled = false;
+    enterApp();
+  } catch (err) {
+    console.error(err);
+    $('loginLoading').style.display = 'none';
+    $('btnLogin').disabled = false;
+    $('loginError').textContent = 'Gagal masuk: ' + (err.message || err.code);
+  }
+});
+
+$('btnLogout').addEventListener('click', async () => {
+  if (!confirm('Yakin mau keluar?')) return;
+  try {
+    if (db && onlineUserId) {
+      const myRef = ref(db, 'quizzep_online/' + onlineUserId);
+      try { await remove(myRef); } catch(e){}
+    }
+    await signOut(auth);
+  } catch(e){}
+  localStorage.removeItem('quizzep_name');
+  state.user = null;
+  showScreen('screenLogin');
+});
+
+// ============ ENTER APP + UID ============
+function enterApp() {
+  $('userChip').textContent = '👤 ' + state.name;
+  if (state.user && state.user.uid) {
+    const uid = state.user.uid;
+    const shortUid = uid.length > 12 ? uid.slice(0, 12) + '…' : uid;
+    const chip = $('uidChip');
+    chip.textContent = '🔑 ' + shortUid;
+    chip.title = 'UID Lengkap: ' + uid;
+    chip.style.display = 'inline-flex';
+    chip.style.alignItems = 'center';
+    chip.onclick = () => {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(uid).then(() => {
+          chip.textContent = '✅ Tersalin!';
+          setTimeout(() => { chip.textContent = '🔑 ' + shortUid; }, 1500);
+        }).catch(() => { alert('UID Firebase kamu:\n\n' + uid); });
+      } else {
+        alert('UID Firebase kamu:\n\n' + uid);
+      }
+    };
+  }
+  const autoSem = getAutoSemester();
+  $('autoSemesterInfo').textContent = `Semester ${autoSem} • TA ${getTahunAjaran(autoSem)}`;
+  renderKelasGrid();
+  renderResumeBanner();
+  initOnlinePresence();
+  showScreen('screenKelas');
+}
+
+// ============ RESUME BANNER ============
+function renderResumeBanner() {
+  const sesi = loadSession();
+  const banner = $('resumeBanner');
+  if (sesi && sesi.mapel) {
+    const answered = sesi.answers ? sesi.answers.filter(a => a && (a.choice !== undefined || a.essay)).length : 0;
+    const total = sesi.questions ? sesi.questions.length : 0;
+    $('resumeInfo').innerHTML = `📚 <b>${sesi.mapel}</b><br>Kelas ${sesi.kelas} • Semester ${sesi.semester}<br>Progres: soal <b>${(sesi.currentIndex || 0) + 1}/${total}</b> • terjawab ${answered}/${total}`;
+    banner.classList.add('show');
+  } else {
+    banner.classList.remove('show');
+  }
+}
+
+$('btnResumeGo').addEventListener('click', () => {
+  const sesi = loadSession();
+  if (!sesi) { renderResumeBanner(); return; }
+  applySession(sesi);
+  $('quizSubject').textContent = state.mapel;
+  showScreen('screenQuiz');
+  renderQuestion();
+});
+$('btnResumeDel').addEventListener('click', () => {
+  if (!confirm('Hapus sesi yang tersimpan?')) return;
+  clearSession();
+  renderResumeBanner();
+});
+
+// ============ RENDER KELAS ============
+function renderKelasGrid() {
+  const grid = $('gridKelas');
+  grid.innerHTML = '';
+  for (let k = 7; k <= 12; k++) {
+    const btn = document.createElement('button');
+    btn.className = 'kelas-btn';
+    btn.innerHTML = `<div class="num">${k}</div><div class="txt">KELAS</div>`;
+    btn.addEventListener('click', () => selectKelas(k));
+    grid.appendChild(btn);
+  }
+}
+function selectKelas(k) {
+  state.kelas = k;
+  $('semKelasLabel').textContent = k;
+  updateSemesterInfo();
+  showScreen('screenSemester');
+}
+$('backToKelas').addEventListener('click', () => { renderResumeBanner(); showScreen('screenKelas'); });
+
+function updateSemesterInfo() {
+  const auto = getAutoSemester();
+  const ta = getTahunAjaran(auto);
+  const now = new Date();
+  const bulan = now.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+  $('semInfoBox').innerHTML = `📅 Hari ini: <b>${bulan}</b><br>
+    🎯 Semester otomatis: <b>Semester ${auto}</b> (TA ${ta})<br>
+    ${auto === 2 ? '⚠️ Jika Semester 2 selesai (lewat 30 Juni), kamu otomatis naik kelas.' : '📌 Semester 1 berjalan 1 Juli – 31 Oktober.'}`;
+  if ($('chkAuto').checked) highlightSem(auto);
+}
+function highlightSem(sem) {
+  document.querySelectorAll('.sem-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.sem) === sem));
+}
+$('chkAuto').addEventListener('change', (e) => {
+  if (e.target.checked) highlightSem(getAutoSemester());
+  else document.querySelectorAll('.sem-btn').forEach(b => b.classList.remove('active'));
+});
+document.querySelectorAll('.sem-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    let sem = parseInt(btn.dataset.sem);
+    if ($('chkAuto').checked) {
+      const auto = getAutoSemester();
+      if (sem === 1 && auto === 2) { alert('Semester 1 sudah selesai! Otomatis naik ke Semester 2.'); sem = 2; }
+    }
+    selectSemester(sem);
+  });
+});
+$('backToSemester').addEventListener('click', () => showScreen('screenSemester'));
+  function selectSemester(sem) {
+  state.semester = sem;
+  $('mapelKelasLabel').textContent = state.kelas;
+  $('mapelSemLabel').textContent = sem;
+  renderMapelList();
+  showScreen('screenMapel');
+}
+
+function renderMapelList() {
+  const grid = $('gridMapel');
+  const list = (state.kelas <= 9) ? MAPEL_SMP : MAPEL_SMA;
+  const q = $('searchMapel').value.toLowerCase();
+  grid.innerHTML = '';
+  const filtered = list.filter(m => m.n.toLowerCase().includes(q));
+  if (!filtered.length) {
+    grid.innerHTML = '<p style="color:#a0aec0;font-size:13px;text-align:center;padding:20px">Tidak ada mapel ditemukan.</p>';
+    return;
+  }
+  filtered.forEach(m => {
+    const btn = document.createElement('button');
+    btn.className = 'mapel-btn';
+    btn.innerHTML = `<div class="mapel-icon">${m.i}</div><div class="mapel-name">${m.n}</div>`;
+    btn.addEventListener('click', () => startQuiz(m.n));
+    grid.appendChild(btn);
+  });
+}
+$('searchMapel').addEventListener('input', renderMapelList);
+
+// ============ GENERATE SOAL — 15 PG + 5 ESSAY ============
+function generateQuestions(mapel, kelas, semester) {
+  const questions = [];
+
+  function cariBank(nama) {
+    if (BANK_SOAL[nama]) return BANK_SOAL[nama];
+    const lower = nama.toLowerCase();
+    for (const k of Object.keys(BANK_SOAL)) {
+      if (lower === k.toLowerCase()) return BANK_SOAL[k];
+    }
+    for (const k of Object.keys(BANK_SOAL)) {
+      if (lower.includes(k.toLowerCase()) || k.toLowerCase().includes(lower)) return BANK_SOAL[k];
+    }
+    return null;
+  }
+  function filterKelas(arr) { return arr.filter(s => !s.k || s.k.includes(kelas)); }
+
+  const bank = cariBank(mapel);
+
+  if (bank && bank.gen === 'math') {
+    genMath(kelas).forEach((mq, i) => {
+      questions.push({ type: 'mcq', num: i + 1, text: mq.q, options: mq.o, correct: mq.c });
+    });
+    const essayMath = kelas <= 9 ? [
+      'Selesaikan operasi hitung campuran: 12 + 5 × 3 − 8!',
+      'Persegi panjang 12 cm × 8 cm. Hitung luas dan kelilingnya!',
+      'Jelaskan perbedaan bilangan bulat dan pecahan!',
+      'Hitung rata-rata dari data: 7, 8, 6, 9, 10!',
+      'Selesaikan persamaan linear 2x + 5 = 15!'
+    ] : [
+      'Tentukan turunan f(x) = 3x² + 4x − 5!',
+      'Hitung nilai log₁₀ 1000!',
+      'Tentukan suku ke-10 barisan 3, 7, 11, 15, ...!',
+      'Hitung ∫₀³ (2x + 1) dx!',
+      'Jelaskan perbedaan barisan aritmetika dan geometri!'
+    ];
+    essayMath.forEach((t, i) => questions.push({ type: 'essay', num: i + 1, text: t }));
+    return questions;
+  }
+
+  const TARGET_MCQ = 15;
+  const TARGET_ESSAY = 5;
+
+  let subjectMcq = bank && bank.mcq ? filterKelas(bank.mcq) : [];
+  let subjectEssay = bank && bank.essay ? filterKelas(bank.essay) : [];
+
+  const subs = subCocok(mapel);
+  let fallbackMcq = [];
+  if (subs.length > 0) {
+    fallbackMcq = BANK_GENERAL.mcq.filter(s => s.sub && s.sub.some(sb => subs.includes(sb)));
+  }
+
+  subjectMcq = shuffle(subjectMcq);
+  subjectEssay = shuffle(subjectEssay);
+  fallbackMcq = shuffle(fallbackMcq);
+
+  const usedQ = new Set();
+  const finalMcq = [];
+  for (const q of subjectMcq) {
+    if (finalMcq.length >= TARGET_MCQ) break;
+    if (usedQ.has(q.q)) continue;
+    usedQ.add(q.q); finalMcq.push(q);
+  }
+  for (const q of fallbackMcq) {
+    if (finalMcq.length >= TARGET_MCQ) break;
+    if (usedQ.has(q.q)) continue;
+    usedQ.add(q.q); finalMcq.push(q);
+  }
+
+  finalMcq.slice(0, TARGET_MCQ).forEach((q, idx) => {
+    questions.push({ type: 'mcq', num: idx + 1, text: q.q, options: q.o, correct: q.c });
+  });
+
+  let essays = [...subjectEssay];
+  if (essays.length < TARGET_ESSAY && subs.length > 0) {
+    const fallbackEssay = shuffle(BANK_GENERAL.essay.filter(s => s.sub && s.sub.some(sb => subs.includes(sb))));
+    for (const e of fallbackEssay) {
+      if (essays.length >= TARGET_ESSAY) break;
+      essays.push(e);
+    }
+  }
+  essays = essays.slice(0, TARGET_ESSAY);
+  essays.forEach((t, i) => {
+    const text = typeof t === 'string' ? t : t.q;
+    questions.push({ type: 'essay', num: i + 1, text });
+  });
+
+  return questions;
+}
+
+// ============ START QUIZ ============
+function startQuiz(mapel) {
+  const soals = generateQuestions(mapel, state.kelas, state.semester);
+  if (soals.length < 5) {
+    alert('⚠️ Bank soal untuk "' + mapel + '" belum tersedia.\n\nCoba pilih mata pelajaran lain ya!');
+    return;
+  }
+  state.mapel = mapel;
+  state.questions = soals;
+  state.currentIndex = 0;
+  state.answers = new Array(state.questions.length).fill(null);
+  state.revealed = new Array(state.questions.length).fill(false);
+  state.score = 0; state.benar = 0; state.salah = 0; state.essayFilled = 0; state.paused = false;
+
+  const totalMcq = state.questions.filter(q => q.type === 'mcq').length;
+  const totalEssay = state.questions.filter(q => q.type === 'essay').length;
+  $('quizProgressLabel').textContent = `1 / ${state.questions.length}`;
+  $('quizSubInfo').textContent = `Soal 1 dari ${state.questions.length} • ${totalMcq} PG + ${totalEssay} Essay`;
+  $('quizSubject').textContent = mapel;
+  showScreen('screenQuiz');
+  saveSession();
+  renderQuestion();
+}
+
+function hitungSkorLive() {
+  let benar = 0, salah = 0;
+  state.questions.forEach((q, i) => {
+    if (q.type === 'mcq' && state.revealed[i]) {
+      const ans = state.answers[i];
+      if (ans && ans.choice === q.correct) benar++; else salah++;
+    }
+  });
+  return { benar, salah, total: benar + salah };
+}
+function updateLiveScore() {
+  const s = hitungSkorLive();
+  if (s.total === 0) $('liveScore').textContent = '⭐ Skor: 0';
+  else {
+    const pct = Math.round((s.benar / s.total) * 100);
+    $('liveScore').textContent = `⭐ Skor: ${s.benar}/${s.total} (${pct}%)`;
+  }
+}
+
+function renderQuestion() {
+  const idx = state.currentIndex;
+  const q = state.questions[idx];
+  const total = state.questions.length;
+
+  $('quizProgressLabel').textContent = `${idx + 1} / ${total}`;
+  $('quizSubInfo').textContent = `Soal ${idx + 1} dari ${total} • ${q.type === 'mcq' ? 'Pilihan Ganda' : 'Essay'}`;
+  $('progressFill').style.width = `${((idx) / total) * 100}%`;
+  $('questionType').textContent = q.type === 'mcq' ? 'PILIHAN GANDA' : 'ESSAY';
+  $('questionType').classList.toggle('essay', q.type === 'essay');
+  $('questionText').textContent = q.text;
+
+  const optContainer = $('optionsContainer');
+  const essayInput = $('essayInput');
+  const fb = $('feedbackBox');
+  fb.classList.remove('show', 'correct', 'wrong');
+  fb.innerHTML = '';
+
+  if (q.type === 'mcq') {
+    optContainer.style.display = 'flex';
+    essayInput.style.display = 'none';
+    const isRevealed = state.revealed[idx];
+    optContainer.classList.toggle('locked', isRevealed);
+    optContainer.innerHTML = '';
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.innerHTML = `<div class="option-label">${String.fromCharCode(65 + i)}</div><div class="option-text">${opt}</div>`;
+      const ans = state.answers[idx];
+      if (isRevealed && ans && ans.choice === i) btn.classList.add(i === q.correct ? 'correct' : 'wrong');
+      if (isRevealed && i === q.correct && ans && ans.choice !== q.correct) btn.classList.add('correct');
+      if (!isRevealed && ans && ans.choice === i) btn.classList.add('selected');
+      if (!isRevealed) btn.addEventListener('click', () => pilihOpsi(i));
+      optContainer.appendChild(btn);
+    });
+    if (isRevealed) {
+      const ans = state.answers[idx];
+      const isCorrect = ans && ans.choice === q.correct;
+      fb.classList.add('show', isCorrect ? 'correct' : 'wrong');
+      fb.innerHTML = isCorrect
+        ? `✅ <b>Benar!</b> Jawabanmu tepat. +1 poin.`
+        : `❌ <b>Salah.</b> Jawaban benar: <b>${String.fromCharCode(65 + q.correct)}. ${q.options[q.correct]}</b>`;
+    }
+  } else {
+    optContainer.style.display = 'none';
+    essayInput.style.display = 'block';
+    essayInput.value = (state.answers[idx] && state.answers[idx].essay) || '';
+  }
+
+  const isLast = idx === total - 1;
+  $('btnNextQ').textContent = isLast ? 'Selesai ✓' : 'Selanjutnya →';
+  $('btnSkip').textContent = isLast ? 'Lewati & Selesai' : 'Lewati';
+  $('btnPrevQ').disabled = idx === 0;
+  $('btnSkip').style.display = isLast ? 'none' : '';
+  updateLiveScore();
+}
+
+function pilihOpsi(i) {
+  const idx = state.currentIndex;
+  const q = state.questions[idx];
+  if (q.type !== 'mcq' || state.revealed[idx]) return;
+  state.answers[idx] = { choice: i };
+  state.revealed[idx] = true;
+  saveSession();
+  const optBtns = document.querySelectorAll('#optionsContainer .option-btn');
+  optBtns.forEach(b => b.classList.remove('selected'));
+  optBtns.forEach((b, k) => {
+    if (k === i) b.classList.add(i === q.correct ? 'correct' : 'wrong');
+    if (k === q.correct && i !== q.correct) b.classList.add('correct');
+  });
+  $('optionsContainer').classList.add('locked');
+  const fb = $('feedbackBox');
+  const isCorrect = i === q.correct;
+  fb.classList.add('show', isCorrect ? 'correct' : 'wrong');
+  fb.innerHTML = isCorrect
+    ? `✅ <b>Benar!</b> Jawabanmu tepat. +1 poin.`
+    : `❌ <b>Salah.</b> Jawaban benar: <b>${String.fromCharCode(65 + q.correct)}. ${q.options[q.correct]}</b>`;
+  updateLiveScore();
+  }
+  $('btnNextQ').addEventListener('click', () => handleNext(false));
+$('btnSkip').addEventListener('click', () => handleNext(true));
+$('btnPrevQ').addEventListener('click', () => {
+  if (state.currentIndex > 0) {
+    state.currentIndex--;
+    saveSession();
+    renderQuestion();
+    window.scrollTo(0, 0);
+  }
+});
+
+function handleNext(skip) {
+  const idx = state.currentIndex;
+  const q = state.questions[idx];
+  if (q.type === 'essay') {
+    const val = $('essayInput').value.trim();
+    if (!skip && val.length < 3) { alert('Jawaban essay minimal 3 karakter ya, atau klik "Lewati".'); return; }
+    state.answers[idx] = { essay: val };
+    if (val.length >= 3) { if (!state.revealed[idx]) state.essayFilled++; state.revealed[idx] = true; }
+  }
+  if (q.type === 'mcq' && !state.revealed[idx] && !skip) { alert('Pilih salah satu jawaban dulu ya!'); return; }
+  saveSession();
+  const nextIdx = idx + 1;
+  const isMcqBoundary = q.type === 'mcq' && (nextIdx % 10 === 0) && nextIdx < state.questions.length;
+  if (isMcqBoundary && !skip) {
+    $('modalIcon').textContent = '⏸️';
+    $('modalTitle').textContent = `Hebat! Sudah ${nextIdx} soal.`;
+    $('modalDesc').textContent = 'Apakah kamu ingin lanjut ke soal berikutnya?';
+    $('btnIstirahat').textContent = '😴 Tidak, saya ingin istirahat';
+    $('btnLanjut').textContent = '🚀 Ya, saya ingin lanjut';
+    $('modalConfirm').classList.add('active');
+    return;
+  }
+  goNext();
+}
+
+$('btnLanjut').addEventListener('click', () => { $('modalConfirm').classList.remove('active'); goNext(); });
+$('btnIstirahat').addEventListener('click', () => {
+  $('modalConfirm').classList.remove('active');
+  state.paused = true;
+  saveSession();
+  $('pauseOverlay').classList.add('active');
+});
+
+function goNext() {
+  if (state.currentIndex < state.questions.length - 1) {
+    state.currentIndex++;
+    saveSession();
+    renderQuestion();
+    window.scrollTo(0, 0);
+  } else finishQuiz();
+}
+
+$('btnResume').addEventListener('click', () => {
+  $('pauseOverlay').classList.remove('active');
+  state.paused = false;
+  if (state.currentIndex < state.questions.length - 1) state.currentIndex++;
+  saveSession();
+  renderQuestion();
+});
+$('btnExit').addEventListener('click', () => {
+  $('pauseOverlay').classList.remove('active');
+  state.paused = false;
+  saveSession();
+  renderResumeBanner();
+  showScreen('screenKelas');
+});
+
+$('btnQuizExit').addEventListener('click', () => $('modalExit').classList.add('active'));
+$('btnExitCancel').addEventListener('click', () => $('modalExit').classList.remove('active'));
+$('btnExitConfirm').addEventListener('click', () => {
+  $('modalExit').classList.remove('active');
+  saveSession();
+  renderResumeBanner();
+  showScreen('screenKelas');
+});
+
+function finishQuiz() {
+  let benar = 0, salah = 0;
+  state.questions.forEach((q, i) => {
+    if (q.type === 'mcq') {
+      const ans = state.answers[i];
+      if (ans && ans.choice === q.correct) benar++; else salah++;
+    }
+  });
+  const totalMcq = state.questions.filter(q => q.type === 'mcq').length || 15;
+  const nilai = Math.round((benar / totalMcq) * 100);
+  state.benar = benar; state.salah = salah; state.score = nilai;
+
+  $('scoreNum').textContent = nilai;
+  $('statBenar').textContent = benar;
+  $('statSalah').textContent = salah;
+  const totalEssay = state.questions.filter(q => q.type === 'essay').length || 5;
+  $('statEssay').textContent = state.essayFilled + ' / ' + totalEssay;
+
+  let emoji = '🎉', title = 'Kuis Selesai!';
+  if (nilai >= 90) { emoji = '🏆'; title = 'Luar Biasa!'; }
+  else if (nilai >= 75) { emoji = '🌟'; title = 'Bagus Sekali!'; }
+  else if (nilai >= 60) { emoji = '👍'; title = 'Cukup Baik!'; }
+  else { emoji = '💪'; title = 'Ayo Semangat Belajar!'; }
+  $('resultEmoji').textContent = emoji;
+  $('resultTitle').textContent = title;
+
+  if (state.semester === 2 && nilai >= 60 && state.kelas < 12) {
+    const nextKelas = state.kelas + 1;
+    $('resultStats').insertAdjacentHTML('afterend',
+      `<div style="background:#f0fff4;border-left:4px solid #38a169;padding:12px;border-radius:8px;font-size:12px;color:#22543d;line-height:1.5;margin-bottom:16px">
+        🎓 Semester 2 selesai & nilaimu bagus, kamu berhak naik ke <b>Kelas ${nextKelas}</b>!
+      </div>`);
+  }
+
+  clearSession();
+  renderResumeBanner();
+  showScreen('screenHasil');
+}
+
+$('btnUlangi').addEventListener('click', () => startQuiz(state.mapel));
+$('btnGantiMapel').addEventListener('click', () => { renderMapelList(); showScreen('screenMapel'); });
+
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('quizzep_name');
+  if (saved) $('inputName').value = saved;
+  renderKelasGrid();
+  renderResumeBanner();
+});
+</script>
+</body>
+</html>
